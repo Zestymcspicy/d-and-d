@@ -9,40 +9,80 @@
   <title>TTRPG Page</title>
 </head>
 <body>
-  <nav class="navbar navbar-dark navbar-expand-lg bg-info">
-    <a class="navbar-brand" href="#">HEy HEY!</a>
-    <button type="button" class="btn btn-dark" data-toggle="modal" data-target="#add-character-modal" id="add-character-button">add Character</button>
+  <nav id="myNav" class="navbar navbar-expand-lg">
+    <icon class="navbar-brand">HEy HEY!</icon>
+    <!-- <button type="button" class="btn btn-dark" data-toggle="modal" data-target="#add-character-modal" id="add-character-button">add Character</button> -->
+    <button type="button" class="btn btn-dark" data-toggle="modal" data-target="#sign-in-modal" id="sign-in-button">Sign In</button>
+    <div class="dropdown">
+      <button class="btn btn-secondary dropdown-toggle" type="button" id="mainDropdownButton" data-toggle="dropdown" aria-haspopup="true" aria-explanded="false">
+        Menu
+      </button>
+      <div class="dropdown-menu" aria-labelledby="mainDropdownButton">
+        <a class="dropdown-item" href="#">Characters</a>
+        <a class="dropdown-item" href="#">Characters</a>
+        <a class="dropdown-item" href="#">Characters</a>
+      </div>
+    </div>
   </nav>
-  <div id="add-character-modal" class="modal">
-    <div class="modal-dialog" role="document">
+  <div id="sign-in-modal" class="modal">
+    <div class="modal-dialog" role="form">
       <div class="modal-content container">
         <div class="modal-header">
-          <h5 class="modal-title">Add Character</h5>
+          <h5 class="modal-title">Sign In</h5>
         </div>
-          <form name="charForm">
+          <form>
             <div class="form-group">
-              <label for="nameInput">Name</label>
-              <input type="text" class="form-control" id="nameInput" placeholder="Enter Name">
+              <label for="inputUserName">User Name</label>
+              <input type="text" class="form-control" id="inputUserName" placeholder="Username">
             </div>
             <div class="form-group">
-              <label for="levelInput">Level</label>
-              <input type="number" class="form-control" id="levelInput" placeholder="Enter Level">
-            </div>
-            <div class="form-group">
-              <label for="classInput">Class</label>
-              <input type="text" class="form-control" id="classInput" placeholder="Enter Class">
-            </div>
-            <div class="form-group form-check">
-              <input type="checkbox" class="form-check-input" id="allGoodCheck">
-              <label class="form-check-label" for="allGoodCheck" required>All Good?</label>
+              <label for="inputPassword">Password</label>
+              <input type="password" class="form-control" id="inputPassword" placeholder="Password">
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
           </form>
       </div>
     </div>
   </div>
-  <h1 class="display-3">Welcome To Daryl's Dungeon</h1>
-  <h1>What's brewing in the cauldron....</h1>
+  <div class="container main-content">
+    <h1 class="display-3">Welcome To Daryl's Dungeon</h1>
+    <h1>What's brewing in the cauldron....</h1>
+    <p>Welcome guys, here's a head's up on whats happening with all y'all,
+    and where you're at. Charles the hobo dwarf is trapped under 60tons of plastic
+    Evan williams bottles in the pit of absolute and utter demoralization.</p>
+    <div class="container messages-container">
+    <div class="media personal-post">
+      <img class="mr-3" src="images/baseDragon.png" alt="dragon!">
+        <div class="media-body">
+          <h5 class="mt-0">Some guys name...</h5>
+          Blah Bloo Words!
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="addCharacter" class="container">
+    <form name="charForm">
+      <div class="form-group">
+        <label for="nameInput">Name</label>
+        <input type="text" class="form-control" id="nameInput" placeholder="Enter Name">
+      </div>
+      <div class="form-group">
+        <label for="levelInput">Level</label>
+        <input type="number" class="form-control" id="levelInput" placeholder="Enter Level">
+      </div>
+      <div class="form-group">
+        <label for="classInput">Class</label>
+        <input type="text" class="form-control" id="classInput" placeholder="Enter Class">
+      </div>
+      <div class="form-group form-check">
+        <input type="checkbox" class="form-check-input" id="allGoodCheck">
+        <label class="form-check-label" for="allGoodCheck" required>All Good?</label>
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+  </div>
 
 
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

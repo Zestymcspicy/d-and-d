@@ -1,0 +1,22 @@
+@import url("https://fonts.googleapis.com/css?family=Almendra");
+#myNav {
+  background-image: linear-gradient(#3c404a, #474747); }
+
+body {
+  font-family: Almendra, cursive;
+  color: #cdc4b1;
+  background-color: #cdc4b1; }
+  body #sign-in-modal {
+    color: #3c404a; }
+  body .main-content {
+    background-color: #3c404a; }
+
+.mr-3 {
+  height: 64px;
+  width: 64px; }
+
+.personal-post {
+  padding-bottom: 1%; }
+
+#addCharacter {
+  display: none; }
