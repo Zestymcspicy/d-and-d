@@ -4,6 +4,14 @@ $myGrey: #3c404a;
 $myGreydient: linear-gradient($myGrey, #474747);
 $primary: #cdc4b1;
 
+.forNewUserHidden{
+  display: none;
+}
+
+.forNewUserVisible{
+  display: block;
+}
+
 #myNav{
   background-image: $myGreydient;
 }
