@@ -86,8 +86,7 @@ function addCharacter() {
       "Content-Type": "application/x-www-form-urlencoded"
     }
   })
-    .then(res => res.body)
-    .then(data => console.log(data.body))
+    .then(res => console.log(res))
     .catch(err => console.log(err));
 }
 
@@ -105,32 +104,100 @@ userForm.addEventListener(
 );
 // <h5 class="mt-0">${user.displayName}</h5>
 function initCommentClicks() {
+  initCommentCollapsers()
   $(document).on("click", ".comment-button", e => {
+    buildInputBox(e.target);
+    e.stopImmediatePropagation()
     $(document).off("click", ".comment-button");
-    const inputBox = buildElement("inputBox", "div");
-    const textInput = buildElement("textInput", "textarea");
-    const postButton = buildElement("postButton", "button");
-    postButton.classList.add("btn", "btn-sm", "btn-light");
-    postButton.innerHTML = "Post";
-    inputBox.classList.add("container");
-    textInput.setAttribute("cols", "40");
-    textInput.setAttribute("rows", "4");
-    inputBox.append(textInput);
-    inputBox.append(postButton);
-    e.target.parentNode.append(inputBox);
-    // e.target.addEventListener("click", function() {
-    // $("#inputBox").detach();
-    // })
-    $(postButton).click(() => console.log(textInput.value));
+    e.target.addEventListener("click", function(e) {
+      e.stopImmediatePropagation()
+      $("#inputBox").remove();
+      resetCommentClicks();
+    })
   });
 }
 
+//experiencing difficulty rebuilding input box after closing
+function resetCommentClicks() {
+  initCommentClicks()
+}
+//constructed the input box with regular javascript rather than templating
+function buildInputBox(target) {
+  const inputBox = buildElement("inputBox", "div");
+  const textInput = buildElement("textInput", "textarea");
+  const postButton = buildElement("postButton", "button");
+  const parentDiv = target.parentElement;
+  postButton.classList.add("btn", "btn-sm", "btn-light");
+  postButton.innerHTML = "Post";
+  inputBox.classList.add("container");
+  textInput.setAttribute("cols", "40");
+  textInput.setAttribute("rows", "4");
+  inputBox.append(textInput);
+  inputBox.append(postButton);
+  target.after(inputBox);
+  $(postButton).click((e) => {
+    sendPost(textInput.value, "hal", parentDiv);
+    $("#inputBox").remove();
+  });
+}
+
+function sendPost(content, displayName, parentDiv) {
+  const data = {
+    displayName: displayName,
+    content: content,
+    childOf: parentDiv.id
+  };
+  fetch(`${url}/comments/add/`, {
+    method: "POST",
+    body: `displayName=${displayName}&content=${content}&childOf=${parentDiv.id}`,
+    // body: JSON.stringify(data),
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded"
+    }
+  })
+    .then(res => res.json())
+    .then(data => buildComment(data.comment))
+    .catch(err => console.log(err));
+}
+
+function getComments() {
+  fetch(`${url}/comments/get`)
+  .then(res=>res.json())
+  .then(data=> data.forEach(comment => buildComment(comment)))
+  .catch(err=> console.log(err))
+}
+
+getComments();
 initCommentClicks();
-// $(`<div class="media personal-post">
-//   <img class="mr-3" src="images/baseDragon.png" alt="dragon!">
-//     <div class="media-body">
-//       <h5 class="mt-0">Hey</h5>
-//       Blah Bloo Words!
-//       <button type="button" class="btn-sm comment-button">Comment</button>
-//     </div>
-//   </div>`)
+
+function buildComment(commentObj){
+//comment template using template literal
+  let comment = `<div class="continer-fluid d-flex">
+  <button class="hidePostsButton align-self-start">[-]</button>
+  <div class="media personal-post" id="childOf${commentObj.childOf}">
+  <img class="mr-3" src="images/baseDragon.png" alt="dragon!">
+    <div class="media-body" id=${commentObj._id}>
+      <h5 class="mt-0">${commentObj.displayName}</h5>
+      ${commentObj.content}
+      <button type="button" class="comment-button">Comment</button>
+    </div>
+  </div>
+  </div>`
+  $(`#${commentObj.childOf}`).append(comment);
+  initCommentClicks()
+}
+
+function initCommentCollapsers() {
+  $('.hidePostsButton').click(function(e){
+    e.stopImmediatePropagation()
+    console.log("hello")
+    if(e.target.innerHTML==='[-]'){
+      e.target.innerHTML='[+]';
+      e.target.nextElementSibling.classList.add("hidden")
+    } else {
+      e.target.innerHTML='[-]';
+      e.target.nextElementSibling.classList.remove("hidden")
+    }
+
+  })
+}

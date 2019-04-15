@@ -1,9 +1,13 @@
 @import url("https://fonts.googleapis.com/css?family=Almendra");
-.forNewUserHidden {
+.hidden {
   display: none; }
 
-.forNewUserVisible {
+.visible {
   display: block; }
+
+.hidePostsButton {
+  background-color: transparent;
+  border: none; }
 
 #myNav {
   background-image: linear-gradient(#3c404a, #474747); }
@@ -18,11 +22,14 @@ body {
     background-color: #3c404a; }
 
 .mr-3 {
-  height: 64px;
-  width: 64px; }
+  height: 32px;
+  width: 32px; }
 
 .personal-post {
   padding-bottom: 1%; }
 
 #addCharacter {
   display: none; }
+
+.comment-button {
+  font-size: 12px; }

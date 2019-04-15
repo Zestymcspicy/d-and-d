@@ -4,12 +4,17 @@ $myGrey: #3c404a;
 $myGreydient: linear-gradient($myGrey, #474747);
 $primary: #cdc4b1;
 
-.forNewUserHidden{
+.hidden{
   display: none;
 }
 
-.forNewUserVisible{
+.visible{
   display: block;
+}
+
+.hidePostsButton {
+  background-color: transparent;
+  border: none;
 }
 
 #myNav{
@@ -29,8 +34,8 @@ body {
 }
 
 .mr-3 {
-  height: 64px;
-  width: 64px;
+  height: 32px;
+  width: 32px;
 }
 
 .personal-post {
@@ -40,3 +45,8 @@ body {
 #addCharacter {
   display: none;
 }
+
+  .comment-button{
+    font-size: 12px;
+    
+  }
