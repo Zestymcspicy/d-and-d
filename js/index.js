@@ -10,7 +10,14 @@ const email = document.getElementById("inputEmail");
 const passwordMatch = $("#inputPasswordMatch")[0];
 const signInButton = $("#sign-in-button");
 let isNewUser = false;
-let user;
+let user = {
+  admin: false,
+  displayName: "Jarry",
+  email: "Archer",
+  password: "nine",
+  __v: 0,
+  _id: "5cad91f9b68556125059cc8b"
+}
 newUserButton.addEventListener("click", () => toggleSignInForm());
 
 function buildElement(elName, type) {
@@ -22,11 +29,11 @@ function buildElement(elName, type) {
 
 function toggleSignInForm() {
   if (isNewUser === true) {
-    newUserFormLines.setAttribute("class", "forNewUserHidden");
+    newUserFormLines.setAttribute("class", "hidden");
     isNewUser = false;
     newUserButton.innerHTML = "New User?";
   } else {
-    newUserFormLines.setAttribute("class", "forNewUserVisible");
+    newUserFormLines.setAttribute("class", "visible");
     isNewUser = true;
     newUserButton.innerHTML = "Back to SignIn";
   }
@@ -45,9 +52,9 @@ function userSignIn() {
     .then(data => {
       if (data.message === "success") {
         console.log(data);
-        signInButton.text("Switch User");
         // $(".comment-button").removeAttr("disabled");
         user = data.user;
+        // signInButton.classList.add("hidden");
         $("#sign-in-modal").modal("toggle"); //or  $('#IDModal').modal('hide');
         return false;
       } else {
@@ -136,7 +143,7 @@ function buildInputBox(target) {
   inputBox.append(postButton);
   target.after(inputBox);
   $(postButton).click((e) => {
-    sendPost(textInput.value, "hal", parentDiv);
+    sendPost(textInput.value, user.displayName, parentDiv);
     $("#inputBox").remove();
   });
 }
@@ -171,15 +178,21 @@ getComments();
 initCommentClicks();
 
 function buildComment(commentObj){
-//comment template using template literal
+//comment template using template literal add disabled to comment button
   let comment = `<div class="continer-fluid d-flex">
   <button class="hidePostsButton align-self-start">[-]</button>
   <div class="media personal-post" id="childOf${commentObj.childOf}">
   <img class="mr-3" src="images/baseDragon.png" alt="dragon!">
     <div class="media-body" id=${commentObj._id}>
-      <h5 class="mt-0">${commentObj.displayName}</h5>
-      ${commentObj.content}
-      <button type="button" class="comment-button">Comment</button>
+      <h6 class="mt-0 mb-1">${commentObj.displayName}</h6>
+      <p class="mb-1">${commentObj.content}</p>
+      <div>
+        <div class="btn-group" role="group">
+          <button type="button" class="btn-light btn btn-sm mr-1 comment-button">Comment</button>
+          <button type="button" class="btn-light btn btn-sm mr-1 comment-button">Aye!</button>
+          <button type="button" class="btn-light btn btn-sm comment-button">Nay!</button>
+        </div>
+      </div>
     </div>
   </div>
   </div>`

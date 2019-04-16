@@ -14,7 +14,7 @@
     <title>TTRPG Page</title>
   </head>
   <body>
-    <nav id="myNav" class="navbar navbar-expand-lg">
+    <nav id="myNav" class="navbar navbar-expand-lg sticky-top">
       <icon class="navbar-brand">HEy HEY!</icon>
       <!--
         <button type="button" class="btn btn-dark" data-toggle="modal" data-target="#add-character-modal" id="add-character-button">add Character</button>
@@ -69,7 +69,7 @@
                 placeholder="Password"
               />
             </div>
-            <div class="forNewUserHidden" id="forNewUser">
+            <div class="hidden" id="forNewUser">
               <div class="form-group">
                 <label for="inputPasswordMatch">Password Match</label>
                 <input
@@ -95,8 +95,8 @@
               role="alert"
               hidden
             ></div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-            <button type="button" id="newUserButton" class="btn btn-primary">
+            <button type="submit" class="mb-1 btn btn-primary">Submit</button>
+            <button type="button" id="newUserButton" class="mb-1 btn btn-primary">
               New User?
             </button>
           </form>
@@ -114,9 +114,7 @@
       </p>
       <div class="container messages-container">
         <div id="topCommentLine">
-          <button type="button" class="btn btn-light comment-button">
-            Comment
-          </button>
+          <button type="button" class="btn btn-light comment-button" disabled>Comment</button>
         </div>
         <!--
           <div class="media personal-post">
