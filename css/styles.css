@@ -34,3 +34,7 @@ body {
 .comment-button {
   padding: 0 2px;
   font-size: 12px; }
+
+#characterPageJumbo {
+  background-color: #cdc4b1;
+  color: #3c404a; }

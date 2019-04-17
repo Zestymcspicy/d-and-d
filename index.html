@@ -40,7 +40,7 @@
           Menu
         </button>
         <div class="dropdown-menu" aria-labelledby="mainDropdownButton">
-          <a class="dropdown-item" href="#">Characters</a>
+          <a class="dropdown-item" data-page="characterManagement" id="characterManagementOpen" href="#">Character Management</a>
           <a class="dropdown-item" href="#">Characters</a>
           <a class="dropdown-item" href="#">Characters</a>
         </div>
@@ -103,7 +103,7 @@
         </div>
       </div>
     </div>
-    <div class="container main-content">
+    <div class="container main-content" id="front-page">
       <h1 class="display-3">Welcome To Daryl's Dungeon</h1>
       <h1>What's brewing in the cauldron....</h1>
       <p>
@@ -114,7 +114,7 @@
       </p>
       <div class="container messages-container">
         <div id="topCommentLine">
-          <button type="button" class="btn btn-light comment-button" disabled>Comment</button>
+          <button type="button" class="btn btn-light comment-button">Comment</button>
         </div>
         <!--
           <div class="media personal-post">
@@ -128,8 +128,8 @@
       </div>
     </div>
 
-    <div id="addCharacter" class="container">
-      <form name="charForm">
+    <div id="addCharacterPage" class="container main-content hidden">
+      <form name="charForm" onsubmit="addCharacter()">
         <div class="form-group">
           <label for="nameInput">Name</label>
           <input
@@ -149,6 +149,16 @@
           />
         </div>
         <div class="form-group">
+          <label for="raceInput">Race</label>
+          <select class="form-control" id="raceInput">
+            <option>Human</option>
+            <option>Dwarf</option>
+            <option>Orc</option>
+            <option>Elf</option>
+            <option>Troll</option>
+          </select>
+        </div>
+        <div class="form-group">
           <label for="classInput">Class</label>
           <input
             type="text"
@@ -165,6 +175,15 @@
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
       </form>
+    </div>
+
+    <div id="characterManagementPage" class="container main-content hidden">
+      <div class="jumbotron" id="characterPageJumbo">
+        <h1 class="display-3" id="characterPageHeader">Your Character Page</h1>
+        <button class="btn btn-primary" data-page="addCharacter" id="addCharacterButton" disabled>Add Character</button>
+        <!-- <button class="btn btn-danger" id="deleteCharacterButton" disabled>Delete Character</button> -->
+        <div id="characterContainer" class="container"></div>
+      </div>
     </div>
 
     <script

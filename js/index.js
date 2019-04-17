@@ -11,14 +11,27 @@ const passwordMatch = $("#inputPasswordMatch")[0];
 const signInButton = $("#sign-in-button");
 let isNewUser = false;
 let user = {
-  admin: false,
-  displayName: "Jarry",
-  email: "Archer",
-  password: "nine",
-  __v: 0,
-  _id: "5cad91f9b68556125059cc8b"
+  _id:"5cb262c34b216596b8964295",
+  displayName:"bob the horse",
+  password:"bilbo",
+  email:"bilbo",
+  admin:false,
+  __v:{"$numberInt":"0"}
 }
+
 newUserButton.addEventListener("click", () => toggleSignInForm());
+
+
+$('#addCharacterButton').click(e => switchMainContent(e))
+
+$(".dropdown-item").click(e => switchMainContent(e))
+
+function switchMainContent(e) {
+  $(".main-content").addClass("hidden");
+  $(`#${e.target.dataset.page}Page`).removeClass('hidden')
+  // document.getElementById(toOpenId).classList.remove("hidden");
+}
+
 
 function buildElement(elName, type) {
   let id = elName;
@@ -79,21 +92,21 @@ async function addUser() {
     .catch(err => console.log(err));
 }
 
-function checkNewUserForm() {}
 
 function addCharacter() {
   const name = document.getElementById("nameInput");
   const level = document.getElementById("levelInput");
   const charClass = document.getElementById("classInput");
-
+  const race = document.getElementById("raceInput");
   fetch(`${url}/characters/create/`, {
     method: "POST",
-    body: `name=${name.value}&level=${level.value}&class=${charClass.value}`,
+    body: `name=${name.value}&level=${level.value}&class=${charClass.value}&user=${user._id}&race=${race.value}`,
     headers: {
       "Content-Type": "application/x-www-form-urlencoded"
     }
   })
-    .then(res => console.log(res))
+    .then(res => res.json())
+    .then(data => console.log(data))
     .catch(err => console.log(err));
 }
 
@@ -134,6 +147,7 @@ function buildInputBox(target) {
   const textInput = buildElement("textInput", "textarea");
   const postButton = buildElement("postButton", "button");
   const parentDiv = target.parentElement;
+  const mediaAncestor = (parentDiv.parentElement).parentElement;
   postButton.classList.add("btn", "btn-sm", "btn-light");
   postButton.innerHTML = "Post";
   inputBox.classList.add("container");
@@ -141,9 +155,9 @@ function buildInputBox(target) {
   textInput.setAttribute("rows", "4");
   inputBox.append(textInput);
   inputBox.append(postButton);
-  target.after(inputBox);
+  parentDiv.before(inputBox);
   $(postButton).click((e) => {
-    sendPost(textInput.value, user.displayName, parentDiv);
+    sendPost(textInput.value, user.displayName, mediaAncestor);
     $("#inputBox").remove();
   });
 }
@@ -174,8 +188,7 @@ function getComments() {
   .catch(err=> console.log(err))
 }
 
-getComments();
-initCommentClicks();
+
 
 function buildComment(commentObj){
 //comment template using template literal add disabled to comment button
@@ -211,6 +224,17 @@ function initCommentCollapsers() {
       e.target.innerHTML='[-]';
       e.target.nextElementSibling.classList.remove("hidden")
     }
-
   })
 }
+
+function buildCharacterPage () {
+  $("#characterPageHeader").text(`${user.displayName}'s Characters`);
+  $("#addCharacterButton").removeAttr('disabled');
+
+}
+
+
+
+getComments();
+initCommentClicks();
+buildCharacterPage();
