@@ -15,7 +15,7 @@
   </head>
   <body>
     <nav id="myNav" class="navbar navbar-expand-lg sticky-top">
-      <icon class="navbar-brand">HEy HEY!</icon>
+      <icon class="navbar-brand"><img src="images/axeDouble-sm.png" alt="Double Axe"></icon>
       <!--
         <button type="button" class="btn btn-dark" data-toggle="modal" data-target="#add-character-modal" id="add-character-button">add Character</button>
       -->
@@ -41,7 +41,7 @@
         </button>
         <div class="dropdown-menu" aria-labelledby="mainDropdownButton">
           <a class="dropdown-item" data-page="characterManagement" id="characterManagementOpen" href="#">Character Management</a>
-          <a class="dropdown-item" href="#">Characters</a>
+          <a class="dropdown-item" data-page="front" href="#">Front Page</a>
           <a class="dropdown-item" href="#">Characters</a>
         </div>
       </div>
@@ -103,7 +103,7 @@
         </div>
       </div>
     </div>
-    <div class="container main-content" id="front-page">
+    <div class="container main-content hidden" id="frontPage">
       <h1 class="display-3">Welcome To Daryl's Dungeon</h1>
       <h1>What's brewing in the cauldron....</h1>
       <p>
@@ -116,15 +116,7 @@
         <div id="topCommentLine">
           <button type="button" class="btn btn-light comment-button">Comment</button>
         </div>
-        <!--
-          <div class="media personal-post">
-          <img class="mr-3" src="images/baseDragon.png" alt="dragon!">
-            <div class="media-body">
-              <h5 class="mt-0">Some guys name...</h5>
-              Blah Bloo Words!
-            </div>
-          </div>
-        -->
+
       </div>
     </div>
 
@@ -173,16 +165,31 @@
             >All Good?</label
           >
         </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" class="bm-1 btn btn-primary">Submit</button>
       </form>
     </div>
 
-    <div id="characterManagementPage" class="container main-content hidden">
-      <div class="jumbotron" id="characterPageJumbo">
+    <div id="characterManagementPage" class="container main-content">
+      <div class="jumbotron" id="characterManagementPageJumbo">
         <h1 class="display-3" id="characterPageHeader">Your Character Page</h1>
         <button class="btn btn-primary" data-page="addCharacter" id="addCharacterButton" disabled>Add Character</button>
         <!-- <button class="btn btn-danger" id="deleteCharacterButton" disabled>Delete Character</button> -->
-        <div id="characterContainer" class="container"></div>
+        <div id="characterContainer" class="container">
+          <ul class="list-group" id="characterList"></ul>
+        </div>
+      </div>
+    </div>
+
+    <div id="characterPage" class="container main-content hidden">
+      <div class="jumbotron" id="characterPageJumbo">
+      </div>
+    </div>
+    <div id="icon-modal" class="modal">
+      <div class="modal-dialog">
+        <div class="modal-content container">
+          <div class="modal-header"><h5 class="modal-title">Select An Icon</h5></div>
+          <div id="iconsBox" class="container"></div>
+        </div>
       </div>
     </div>
 

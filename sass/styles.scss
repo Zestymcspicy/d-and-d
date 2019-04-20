@@ -17,6 +17,11 @@ $primary: #cdc4b1;
   border: none;
 }
 
+.icon-select-image {
+  max-width: 100px;
+  max-height: 100px;
+}
+
 #myNav{
   background-image: $myGreydient;
 }
@@ -33,7 +38,7 @@ body {
   }
 }
 
-.mr-3 {
+.avatar {
   height: 32px;
   width: 32px;
 }
@@ -46,12 +51,26 @@ body {
   display: none;
 }
 
+.character-image{
+  max-height: 200px;
+  max-width: 200px;
+}
+
+.characterSelectButton :hover{
+  cursor: pointer;
+  background-color: $myGrey;
+  color: $primary;
+}
+
+.avatar-char-name{
+  width: 100%;
+}
 .comment-button {
   padding: 0 2px;
   font-size: 12px;
 }
 
-#characterPageJumbo {
+#characterManagementPageJumbo, #characterPageJumbo{
   background-color: $primary;
   color: $myGrey;
 }

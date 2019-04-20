@@ -9,6 +9,10 @@
   background-color: transparent;
   border: none; }
 
+.icon-select-image {
+  max-width: 100px;
+  max-height: 100px; }
+
 #myNav {
   background-image: linear-gradient(#3c404a, #474747); }
 
@@ -21,7 +25,7 @@ body {
   body .main-content {
     background-color: #3c404a; }
 
-.mr-3 {
+.avatar {
   height: 32px;
   width: 32px; }
 
@@ -31,10 +35,22 @@ body {
 #addCharacter {
   display: none; }
 
+.character-image {
+  max-height: 200px;
+  max-width: 200px; }
+
+.characterSelectButton :hover {
+  cursor: pointer;
+  background-color: #3c404a;
+  color: #cdc4b1; }
+
+.avatar-char-name {
+  width: 100%; }
+
 .comment-button {
   padding: 0 2px;
   font-size: 12px; }
 
-#characterPageJumbo {
+#characterManagementPageJumbo, #characterPageJumbo {
   background-color: #cdc4b1;
   color: #3c404a; }
