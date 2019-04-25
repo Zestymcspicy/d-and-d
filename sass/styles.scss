@@ -12,6 +12,8 @@ $primary: #cdc4b1;
   display: block;
 }
 
+
+
 .hidePostsButton {
   background-color: transparent;
   border: none;
@@ -20,23 +22,39 @@ $primary: #cdc4b1;
 .icon-select-image {
   max-width: 100px;
   max-height: 100px;
+  &:hover {
+    cursor: pointer;
+    background-color: $myGrey;
+  }
+
 }
 
 #myNav{
   background-image: $myGreydient;
 }
 
+#journalEditorPageMain{
+    background-color: $primary;
+    color: $myGrey;
+    .ql-toolbar .ql-snow .ql-container{
+      border: 1px solid $myGrey;
+    }
+}
+
+
+
 body {
   font-family: Almendra, cursive;
   color: $primary;
   background-color: $primary;
-  #sign-in-modal {
+  #sign-in-modal, #icon-modal{
     color:$myGrey;
   }
   .main-content {
     background-color: $myGrey;
   }
 }
+
 
 .avatar {
   height: 32px;

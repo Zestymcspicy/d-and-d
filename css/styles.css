@@ -12,15 +12,24 @@
 .icon-select-image {
   max-width: 100px;
   max-height: 100px; }
+  .icon-select-image:hover {
+    cursor: pointer;
+    background-color: #3c404a; }
 
 #myNav {
   background-image: linear-gradient(#3c404a, #474747); }
+
+#journalEditorPageMain {
+  background-color: #cdc4b1;
+  color: #3c404a; }
+  #journalEditorPageMain .ql-toolbar .ql-snow .ql-container {
+    border: 1px solid #3c404a; }
 
 body {
   font-family: Almendra, cursive;
   color: #cdc4b1;
   background-color: #cdc4b1; }
-  body #sign-in-modal {
+  body #sign-in-modal, body #icon-modal {
     color: #3c404a; }
   body .main-content {
     background-color: #3c404a; }

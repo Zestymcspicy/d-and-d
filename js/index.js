@@ -9,6 +9,7 @@ const password = document.getElementById("inputPassword");
 const email = document.getElementById("inputEmail");
 const passwordMatch = $("#inputPasswordMatch")[0];
 const signInButton = $("#sign-in-button");
+let quill;
 let isNewUser = false;
 let allCharacters = [];
 let userCharacters = [];
@@ -44,8 +45,12 @@ newUserButton.addEventListener("click", () => toggleSignInForm());
 
 $("#addCharacterButton").click(e => switchMainContent(e.target));
 
+
+
 $(".dropdown-item").click(e => switchMainContent(e.target));
 
+
+//switches main content to the data-page attribute of the selected button
 function switchMainContent(target) {
   $(".main-content").addClass("hidden");
   $(`#${target.dataset.page}Page`).removeClass("hidden");
@@ -115,23 +120,24 @@ async function addUser() {
     .then(data => {
       if(data.message!=="success"){
         console.log(data)
-        let errorMessage = "";
-        if(data.displayName){
-          errorMessage = `${data.displayName}`
+
+        if(!data.displayName){
+          data.displayName="";
         }
-        if(data.email){
-          errorMessage = `${errorMessage}/
-          ${data.email}`
+        if(!data.email){
+          data.email="";
         }
-        if(data.password) {
-          errorMessage = `${errorMessage}/
-          ${data.password}`
+        if(!data.password) {
+          data.password="";
         }
-        if(data.passwordMatch){
-          errorMessage = `${errorMessage}/
+        if(!data.passwordMatch){
+          data.passwordMatch="";
+        }
+        const errorMessage = `${data.displayName}
+          ${data.email}
+          ${data.password}
           ${data.passwordMatch}`
-        }
-        $("#signInAlert").text(`${errorMessage}`)
+        $("#signInAlert").text(errorMessage)
         $("#signInAlert").removeAttr("hidden");
       } else {
         user = data.user;
@@ -242,7 +248,7 @@ function sendPost(content, displayName, parentDiv) {
     body: `displayName=${displayName}&content=${content}&childOf=${
       parentDiv.id
     }`,
-    // body: JSON.stringify(data),
+
     headers: {
       "Content-Type": "application/x-www-form-urlencoded"
     }
@@ -285,7 +291,6 @@ function buildComment(commentObj) {
 function initCommentCollapsers() {
   $(".hidePostsButton").click(function(e) {
     e.stopImmediatePropagation();
-    console.log("hello");
     if (e.target.innerHTML === "[-]") {
       e.target.innerHTML = "[+]";
       e.target.nextElementSibling.classList.add("hidden");
@@ -313,7 +318,7 @@ function buildCharacterBox(characterObj, idx) {
     const dragon = "images/baseDragon.png";
     characterObj.icon = dragon;
   }
-  const charBox = `<li class="container bp-0 bm-1 list-group-item">
+  const charBox = `<li class="container mt-2 pb-0 mb-1 list-group-item">
     <div data-page="character" id=${characterObj._id} aria-role="${
     characterObj.name
   } button" class="row characterSelectButton">
@@ -339,6 +344,7 @@ function selectCharacter(target) {
 
 function buildCharacterPage(currentCharacter){
   $('#characterPageJumbo').empty();
+  let journalUpdateButton = "";
   let editButton = "";
   let switchImageButton = "";
   let summary = "Add a summary";
@@ -354,6 +360,7 @@ function buildCharacterPage(currentCharacter){
     switchImageButton = `<button data-char_id=${
       currentCharacter._id
     } id='chooseCharacterImageButton' data-target="#icon-modal" data-toggle="modal" class='btn btn-outline mt-0'>Choose Image</button>`;
+    journalUpdateButton = `<button id="editJournal" data-page="journalEditor">Edit Journal</button>`
   } else {
     editButton = "";
   }
@@ -373,12 +380,38 @@ function buildCharacterPage(currentCharacter){
     <h5 class="mb-0 mt-1">Summary</h5>${editButton}
   </div>
   <p id="characterSummary">${summary}</p>
+  ${journalUpdateButton}
+  <div id="journals-top"></div>
   </div>`;
   $("#characterPageJumbo").append(charInfo);
   if (editButton !== "") {
+    addJournalListener();
     addEditListener();
     addSelectImageListener();
   }
+}
+
+function addJournalListener() {
+  $("#editJournal").click(e => {
+    switchMainContent(e.target)
+    $("#openNewJournalEntry").click(e=> {
+      const editor=`<div id="editorContainer">
+      <div id="editor">
+      </div>
+      <button id="submitNewJournalEntry">Submit</button>
+      </div>`
+      $("#journalEditorPageMain").append(editor);
+      quill = new Quill('#editor', {
+        theme: 'snow'
+      });
+      $("#submitNewJournalEntry").click(()=> addNewJournalEntry())
+    })
+  });
+}
+
+function addNewJournalEntry() {
+  let contents = quill.getContents();
+  console.log(contents)
 }
 
 function addSelectImageListener() {
@@ -397,10 +430,10 @@ function populateIconModal() {
   iconsArray.forEach(x => {
     const iconButton = buildElement('button', x);
     iconButton.classList.add('btn', 'icon-button');
-    iconButton.innerHTML = `<img class='icon-select-image' src='images/${x}.png'>`
+    iconButton.innerHTML = `<img data-target="#icon-modal" data-toggle="modal" class='icon-select-image' src='images/${x}.png'>`
     $("#iconsBox").append(iconButton);
     iconButton.addEventListener("click", () => {
-      console.log("hello!")
+
       updateCharacter(`images/${x}.png`, "icon");
     })
   });
@@ -432,9 +465,29 @@ function assignCharacters() {
           userCharacters.push(allCharacters[j]);
         }
       }
-
     }
 }
+
+// function addJournals() {
+//   const journalDivs = curentCharacter.journals.map(entry => {
+//     `<div>
+//     <p>
+//     ${entry.content}
+//     </p>
+//     <div class="container messages-container">
+//       <div data-thread_id=`${entry._id}` id="topCommentLine">
+//         <button type="button" class="btn btn-light comment-button">Comment</button>
+//       </div>
+//     </div>
+//     </div>`
+//   })
+// }
+//
+// function journalEditor() {
+//   let journalEditDivs = currentCharacter.journals.map(entry => {
+//     `<button>Edit</button><button>Delete</button>`
+//   })
+// }
 
 
 function initTests() {
