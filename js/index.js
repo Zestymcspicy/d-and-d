@@ -105,13 +105,39 @@ async function addUser() {
   await fetch(`${url}/users/create/`, {
     method: "POST",
     body: `displayName=${displayName.value}&password=${password.value}&email=${
-      email.value
+      email.value}&passwordMatch=${passwordMatch.value
     }`,
     headers: {
       "Content-Type": "application/x-www-form-urlencoded"
     }
   })
-    .then(res => console.log(res))
+    .then(res => res.json())
+    .then(data => {
+      if(data.message!=="success"){
+        console.log(data)
+        let errorMessage = "";
+        if(data.displayName){
+          errorMessage = `${data.displayName}`
+        }
+        if(data.email){
+          errorMessage = `${errorMessage}/
+          ${data.email}`
+        }
+        if(data.password) {
+          errorMessage = `${errorMessage}/
+          ${data.password}`
+        }
+        if(data.passwordMatch){
+          errorMessage = `${errorMessage}/
+          ${data.passwordMatch}`
+        }
+        $("#signInAlert").text(`${errorMessage}`)
+        $("#signInAlert").removeAttr("hidden");
+      } else {
+        user = data.user;
+      }
+
+    })
     .catch(err => console.log(err));
 }
 
@@ -394,10 +420,6 @@ function updateCharacter(content, type) {
       console.log(data)
       allCharacters.push(data.body)
       currentCharacter = data.body
-      // //this is the opposite of ideal
-      // const target = {}
-      // target.dataset = {}
-      // target.dataset.page="character"
       buildCharacterPage(currentCharacter);
    })
     .catch(err => console.log(err));
