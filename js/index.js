@@ -15,6 +15,7 @@ let allCharacters = [];
 let userCharacters = [];
 let user = {};
 let currentCharacter = {};
+let author = "";
 let iconsArray = [
   "armor",
   "axe",
@@ -45,7 +46,10 @@ newUserButton.addEventListener("click", () => toggleSignInForm());
 
 $("#addCharacterButton").click(e => switchMainContent(e.target));
 
-
+$("#addCharacterForm").submit(e => {
+  e.preventDefault();
+  addCharacter();
+})
 
 $(".dropdown-item").click(e => switchMainContent(e.target));
 
@@ -84,8 +88,8 @@ async function getAllCharacters() {
 async function userSignIn() {
   await fetch(`${url}/users/login/`, {
     method: "POST",
-    body: `displayName=bob the horse&password=bilbo`,
-    // body: `displayName=${displayName.value}&password=${password.value}`,
+    // body: `displayName=bob the horse&password=bilbo`,
+    body: `displayName=${displayName.value}&password=${password.value}`,
     headers: {
       "Content-Type": "application/x-www-form-urlencoded"
     }
@@ -93,10 +97,12 @@ async function userSignIn() {
     .catch(err => console.log(err))
     .then(res => res.json())
     .then(data => {
-      if (data.message === "success") {
+      if (data.success === true) {
         console.log(data);
         user = data.user;
-        $("#sign-in-modal").modal("toggle"); //or  $('#IDModal').modal('hide');
+        $("#sign-in-modal").modal("toggle");
+        //basic setup on login
+        setForUser()
         return false;
       } else {
         $("#signInAlert").text(data.message);
@@ -118,8 +124,14 @@ async function addUser() {
   })
     .then(res => res.json())
     .then(data => {
-      if(data.message!=="success"){
+      if(data.message==="success"){
         console.log(data)
+        user = data.user;
+        $("#sign-in-modal").modal("toggle");
+        //basic setup on login
+        setForUser()
+        return false;
+      } else {
 
         if(!data.displayName){
           data.displayName="";
@@ -139,8 +151,6 @@ async function addUser() {
           ${data.passwordMatch}`
         $("#signInAlert").text(errorMessage)
         $("#signInAlert").removeAttr("hidden");
-      } else {
-        user = data.user;
       }
 
     })
@@ -166,6 +176,10 @@ function addCharacter() {
       allCharacters.push(data.body);
       userCharacters.push(data.body);
       user.characters.push(data.body._id);
+      //reset character management page
+      buildCharacterManagementPage();
+      $("#addCharacterPage").addClass('hidden');
+      $("#characterManagementPage").removeClass('hidden');
     })
     .catch(err => console.log(err));
 }
@@ -186,19 +200,45 @@ userForm.addEventListener(
 function initCommentClicks() {
   initCommentCollapsers();
   $(document).on("click", ".comment-button", e => {
-    buildInputBox(e.target, "mediaComment");
     e.stopImmediatePropagation();
+    if(!user.displayName) {
+      alert("you must be logged in to do that!");
+      return
+    }
+    e.target.innerHTML = "Comment As...";
+    addSelectorDropdown(e.target);
+    buildInputBox(e.target, "mediaComment");
     $(document).off("click", ".comment-button");
     e.target.addEventListener("click", function(e) {
       e.stopImmediatePropagation();
-      $("#inputBox").remove();
       resetCommentClicks();
+      $("#inputBox").remove();
     });
   });
 }
 
+function addSelectorDropdown(target) {
+  let authorList = userCharacters.map(char => char.name);
+  authorList.unshift(user.displayName);
+  const nameList = buildElement("name-list", "div");
+  nameList.classList.add("dropdown-menu");
+  authorList.forEach(name => {
+    const item = buildElement(name, "a")
+    item.classList.add("dropdown-item")
+    item.innerHTML = name;
+    nameList.append(item);
+    item.addEventListener("click", () => {
+      author = name;
+      nameList.remove();
+    })
+  })
+  nameList.style.display="block";
+  target.append(nameList);
+}
 //experiencing difficulty rebuilding input box after closing
 function resetCommentClicks() {
+  console.log("Hey")
+  $(".comment-button").text("Comment");
   initCommentClicks();
 }
 //constructed the input box with regular javascript rather than templating
@@ -277,8 +317,8 @@ function buildComment(commentObj) {
       <div>
         <div class="btn-group" role="group">
           <button type="button" class="btn-light btn btn-sm mr-1 comment-button">Comment</button>
-          <button type="button" class="btn-light btn btn-sm mr-1 comment-button">Aye!</button>
-          <button type="button" class="btn-light btn btn-sm comment-button">Nay!</button>
+          <button type="button" class="btn-light btn btn-sm mr-1 aye-button">Aye!</button>
+          <button type="button" class="btn-light btn btn-sm nay-button">Nay!</button>
         </div>
       </div>
     </div>
@@ -305,7 +345,7 @@ function buildCharacterManagementPage() {
   $("#characterPageHeader").text(`${user.displayName}'s Characters`);
   $("#addCharacterButton").removeAttr("disabled");
   userCharacters.forEach((char, idx) => {
-    buildCharacterBox(char, idx);
+    buildCharacterBox(char, idx, $("#characterList"));
   });
   $(".characterSelectButton").click(e => {
     e.stopImmediatePropagation();
@@ -313,7 +353,7 @@ function buildCharacterManagementPage() {
   });
 }
 
-function buildCharacterBox(characterObj, idx) {
+function buildCharacterBox(characterObj, idx, page) {
   if(characterObj.icon==undefined){
     const dragon = "images/baseDragon.png";
     characterObj.icon = dragon;
@@ -333,7 +373,7 @@ function buildCharacterBox(characterObj, idx) {
       <p class="col-sm">Level: ${characterObj.level}</p>
     </div>
   </li>`;
-  $("#characterList").append(charBox);
+  page.append(charBox);
 }
 
 function selectCharacter(target) {
@@ -384,6 +424,7 @@ function buildCharacterPage(currentCharacter){
   <div id="journals-top"></div>
   </div>`;
   $("#characterPageJumbo").append(charInfo);
+  addJournals()
   if (editButton !== "") {
     addJournalListener();
     addEditListener();
@@ -398,20 +439,40 @@ function addJournalListener() {
       const editor=`<div id="editorContainer">
       <div id="editor">
       </div>
-      <button id="submitNewJournalEntry">Submit</button>
+      <button id="submitNewJournalEntry" data-page="character">Submit</button>
       </div>`
       $("#journalEditorPageMain").append(editor);
       quill = new Quill('#editor', {
         theme: 'snow'
       });
-      $("#submitNewJournalEntry").click(()=> addNewJournalEntry())
+      $("#submitNewJournalEntry").click((e)=> {
+        addNewJournalEntry();
+        switchMainContent(e.target);
+        buildCharacterPage(currentCharacter);
+      })
     })
   });
 }
 
+function buildAllCharactersPage() {
+  allCharacters.forEach((char, idx) => {
+    buildCharacterBox(char, idx, $("#allCharactersList"));
+  });
+  $(".characterSelectButton").click(e => {
+    e.stopImmediatePropagation();
+    selectCharacter($(e.delegateTarget)[0]);
+  });
+}
+
+
 function addNewJournalEntry() {
   let contents = quill.getContents();
-  console.log(contents)
+  let entry = {
+    _id: Date.now(),
+    contents: contents
+  };
+  entry = JSON.stringify(entry);
+  updateCharacter(entry, "journals");
 }
 
 function addSelectImageListener() {
@@ -433,7 +494,6 @@ function populateIconModal() {
     iconButton.innerHTML = `<img data-target="#icon-modal" data-toggle="modal" class='icon-select-image' src='images/${x}.png'>`
     $("#iconsBox").append(iconButton);
     iconButton.addEventListener("click", () => {
-
       updateCharacter(`images/${x}.png`, "icon");
     })
   });
@@ -468,20 +528,30 @@ function assignCharacters() {
     }
 }
 
-// function addJournals() {
-//   const journalDivs = curentCharacter.journals.map(entry => {
-//     `<div>
-//     <p>
-//     ${entry.content}
-//     </p>
-//     <div class="container messages-container">
-//       <div data-thread_id=`${entry._id}` id="topCommentLine">
-//         <button type="button" class="btn btn-light comment-button">Comment</button>
-//       </div>
-//     </div>
-//     </div>`
-//   })
-// }
+function addJournals() {
+  if(currentCharacter.journals){
+    const journalDivs = currentCharacter.journals.forEach(entry => {
+      let quillText = new Quill(document.createElement("div"));
+      quillText.setContents(entry.contents);
+      const div = `<div id="journal${entry._id}">
+      <div class="journal-entry">
+      ${quillText.root.innerHTML}
+      </div>
+      <div class="container messages-container">
+        <div data-thread_id=${entry._id} id="topCommentLine">
+          <button type="button" class="btn btn-light comment-button">Comment</button>
+        </div>
+      </div>
+      </div>`;
+    // console.log(div)
+    // return div;
+    $('#journals-top').append(div);
+  })
+  getComments();
+} else {
+  $('#journals-top').append('<p>No Journals Yet</p>')
+}
+}
 //
 // function journalEditor() {
 //   let journalEditDivs = currentCharacter.journals.map(entry => {
@@ -491,11 +561,20 @@ function assignCharacters() {
 
 
 function initTests() {
-  Promise.all([userSignIn(), getComments(), getAllCharacters()])
+  Promise.all([
+    // userSignIn(),
+    getComments(),
+    getAllCharacters()])
   .then(() => {
-    assignCharacters();
-    buildCharacterManagementPage();
+    // assignCharacters();
+    // buildCharacterManagementPage();
+    buildAllCharactersPage();
     initCommentClicks();
   }).catch(err => console.log(err))
 }
 initTests();
+
+function setForUser() {
+  assignCharacters();
+  buildCharacterManagementPage();
+}
