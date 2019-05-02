@@ -16,6 +16,11 @@ let userCharacters = [];
 let user = {};
 let currentCharacter = {};
 let author = "";
+let postAuthObj = {
+  icon: "",
+  name: "",
+  auth_id: "",
+}
 let iconsArray = [
   "armor",
   "axe",
@@ -100,6 +105,11 @@ async function userSignIn() {
       if (data.success === true) {
         console.log(data);
         user = data.user;
+        postAuthObj = {
+          icon: user.icon,
+          name: user.displayName,
+          auth_id: user._id,
+        }
         $("#sign-in-modal").modal("toggle");
         //basic setup on login
         setForUser()
@@ -218,17 +228,24 @@ function initCommentClicks() {
 }
 
 function addSelectorDropdown(target) {
-  let authorList = userCharacters.map(char => char.name);
-  authorList.unshift(user.displayName);
+  // let authorList = userCharacters.map(char => {name:char.name, icon: char.icon});
+  const authorList = userCharacters.slice(0, userCharacters.length);
+  authorList.unshift(user);
   const nameList = buildElement("name-list", "div");
   nameList.classList.add("dropdown-menu");
-  authorList.forEach(name => {
-    const item = buildElement(name, "a")
+  authorList.forEach(x => {
+    if(x.displayName){
+      x.name=x.displayName;
+    }
+    const item = buildElement(x.name, "a")
     item.classList.add("dropdown-item")
-    item.innerHTML = name;
+    item.innerHTML = x.name;
     nameList.append(item);
-    item.addEventListener("click", () => {
-      author = name;
+    item.addEventListener("click", (e) => {
+      e.stopImmediatePropagation()
+      postAuthObj.auth_id = x._id;
+      postAuthObj.name = x.name;
+      postAuthObj.icon = x.icon;
       nameList.remove();
     })
   })
@@ -281,20 +298,24 @@ function sendPost(content, displayName, parentDiv) {
   const data = {
     displayName: displayName,
     content: content,
-    childOf: parentDiv.id
+    childOf: parentDiv.id,
+    icon: postAuthObj.icon
   };
   fetch(`${url}/comments/add/`, {
     method: "POST",
-    body: `displayName=${displayName}&content=${content}&childOf=${
+    body: `auth_id=${postAuthObj.auth_id}&displayName=${postAuthObj.name}&content=${content}&childOf=${
       parentDiv.id
-    }`,
+    }&icon=${postAuthObj.icon}`,
 
     headers: {
       "Content-Type": "application/x-www-form-urlencoded"
     }
   })
     .then(res => res.json())
-    .then(data => buildComment(data.comment))
+    .then(data => {
+      console.log(data);
+      buildComment(data.comment);
+    })
     .catch(err => console.log(err));
 }
 
@@ -306,16 +327,19 @@ function getComments() {
 }
 
 function buildComment(commentObj) {
+  if(!commentObj.icon){
+    commentObj.icon="images/baseDragon.png"
+  }
   //comment template using template literal add disabled to comment button
   let comment = `<div class="continer-fluid d-flex">
   <button class="hidePostsButton align-self-start">[-]</button>
   <div class="media personal-post" id="childOf${commentObj.childOf}">
-  <img class="mr-3 avatar" src="images/baseDragon.png" alt="dragon!">
+  <img class="mr-3 avatar" src=${commentObj.icon} alt="dragon!">
     <div class="media-body" id=${commentObj._id}>
       <h6 class="mt-0 mb-1">${commentObj.displayName}</h6>
       <p class="mb-1">${commentObj.content}</p>
       <div>
-        <div class="btn-group" role="group">
+        <div class="btn-group" role="group" disabled>
           <button type="button" class="btn-light btn btn-sm mr-1 comment-button">Comment</button>
           <button type="button" class="btn-light btn btn-sm mr-1 aye-button">Aye!</button>
           <button type="button" class="btn-light btn btn-sm nay-button">Nay!</button>
@@ -343,6 +367,8 @@ function initCommentCollapsers() {
 
 function buildCharacterManagementPage() {
   $("#characterPageHeader").text(`${user.displayName}'s Characters`);
+  $("#characterPageHeader").before('<button data-target="#icon-modal" data-toggle="modal" class="btn btn-outline mt-0">Choose Avatar</button>');
+  populateIconModal("user");
   $("#addCharacterButton").removeAttr("disabled");
   userCharacters.forEach((char, idx) => {
     buildCharacterBox(char, idx, $("#characterList"));
@@ -477,7 +503,7 @@ function addNewJournalEntry() {
 
 function addSelectImageListener() {
   $("#chooseCharacterImageButton").click(e => {
-    populateIconModal();
+    populateIconModal("character");
   });
 }
 
@@ -487,18 +513,38 @@ function addEditListener() {
   });
 }
 
-function populateIconModal() {
+function populateIconModal(type) {
   iconsArray.forEach(x => {
     const iconButton = buildElement('button', x);
     iconButton.classList.add('btn', 'icon-button');
     iconButton.innerHTML = `<img data-target="#icon-modal" data-toggle="modal" class='icon-select-image' src='images/${x}.png'>`
     $("#iconsBox").append(iconButton);
     iconButton.addEventListener("click", () => {
-      updateCharacter(`images/${x}.png`, "icon");
+      if(type==="character"){
+        updateCharacter(`images/${x}.png`, "icon");
+      }
+      if(type==="user") {
+        updateUserAvatar(`images/${x}.png`);
+      }
     })
   });
 }
 
+function updateUserAvatar(image){
+  console.log("thing")
+    fetch(`${url}/users/${user._id}/image`, {
+      method: 'POST',
+      body: `icon=${image}`,
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      }
+    })
+    .then(res => res.json())
+    .then(data => {
+      user = data.user;
+    })
+    .catch(err => console.log(err))
+}
 
 function updateCharacter(content, type) {
   fetch(`${url}/characters/${currentCharacter._id}/update`, {
