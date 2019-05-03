@@ -35,8 +35,8 @@ body {
     background-color: #3c404a; }
 
 .avatar {
-  height: 32px;
-  width: 32px; }
+  height: 40px;
+  width: 40px; }
 
 .personal-post {
   padding-bottom: 1%; }
@@ -52,6 +52,10 @@ body {
   cursor: pointer;
   background-color: #3c404a;
   color: #cdc4b1; }
+
+#user-icon {
+  width: 100%;
+  height: auto; }
 
 .avatar-char-name {
   width: 100%; }

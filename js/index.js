@@ -90,10 +90,11 @@ async function getAllCharacters() {
   .then(data => allCharacters = data.body)
   .catch(err => console.log(err))
 }
+
 async function userSignIn() {
   await fetch(`${url}/users/login/`, {
     method: "POST",
-    // body: `displayName=bob the horse&password=bilbo`,
+    // body: `displayName=LarryTheCat&password=ImaStupidCat`,
     body: `displayName=${displayName.value}&password=${password.value}`,
     headers: {
       "Content-Type": "application/x-www-form-urlencoded"
@@ -367,8 +368,9 @@ function initCommentCollapsers() {
 
 function buildCharacterManagementPage() {
   $("#characterPageHeader").text(`${user.displayName}'s Characters`);
-  $("#characterPageHeader").before('<button data-target="#icon-modal" data-toggle="modal" class="btn btn-outline mt-0">Choose Avatar</button>');
-  populateIconModal("user");
+  $("#characterPageHeader").before(`<div class="col-3"><button data-target="#icon-modal" data-toggle="modal" class="btn btn-outline mt-0">Choose Avatar</button><img id="user-icon" src=${user.icon} alt="user-icon"/></div>`);
+
+  // populateIconModal("user");
   $("#addCharacterButton").removeAttr("disabled");
   userCharacters.forEach((char, idx) => {
     buildCharacterBox(char, idx, $("#characterList"));
@@ -514,8 +516,9 @@ function addEditListener() {
 }
 
 function populateIconModal(type) {
+  $("#iconsBox").children().remove();
   iconsArray.forEach(x => {
-    const iconButton = buildElement('button', x);
+    const iconButton = buildElement(x, 'button');
     iconButton.classList.add('btn', 'icon-button');
     iconButton.innerHTML = `<img data-target="#icon-modal" data-toggle="modal" class='icon-select-image' src='images/${x}.png'>`
     $("#iconsBox").append(iconButton);
@@ -528,10 +531,11 @@ function populateIconModal(type) {
       }
     })
   });
+  $("#iconsBox").append(`<button class='btn icon-button d-flex'><label for="avatar">Choose your own</label>
+    <input class="mb-1" type="file" id="icon-file-pick" name="avatar" accept="image/png, image/jpeg"></div>`)
 }
 
 function updateUserAvatar(image){
-  console.log("thing")
     fetch(`${url}/users/${user._id}/image`, {
       method: 'POST',
       body: `icon=${image}`,
@@ -565,6 +569,7 @@ function updateCharacter(content, type) {
 }
 
 function assignCharacters() {
+  userCharacter=[];
     for(let i = 0; i<user.characters.length; i++){
       for(let j = 0; j<allCharacters.length; j++){
         if(user.characters[i]===allCharacters[j]._id){
@@ -611,11 +616,12 @@ function initTests() {
     // userSignIn(),
     getComments(),
     getAllCharacters()])
-  .then(() => {
+  .then((res) => {
     // assignCharacters();
     // buildCharacterManagementPage();
     buildAllCharactersPage();
     initCommentClicks();
+    // setForUser();
   }).catch(err => console.log(err))
 }
 initTests();

@@ -57,8 +57,8 @@ body {
 
 
 .avatar {
-  height: 32px;
-  width: 32px;
+  height: 40px;
+  width: 40px;
 }
 
 .personal-post {
@@ -79,6 +79,12 @@ body {
   background-color: $myGrey;
   color: $primary;
 }
+
+#user-icon{
+  width: 100%;
+  height: auto;
+}
+
 
 .avatar-char-name{
   width: 100%;

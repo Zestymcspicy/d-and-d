@@ -17,18 +17,7 @@
   <body>
     <nav id="myNav" class="navbar navbar-expand-lg sticky-top">
       <icon class="navbar-brand"><img src="images/axeDouble-sm.png" alt="Double Axe"></icon>
-      <!--
-        <button type="button" class="btn btn-dark" data-toggle="modal" data-target="#add-character-modal" id="add-character-button">add Character</button>
-      -->
-      <button
-        type="button"
-        class="btn btn-dark"
-        data-toggle="modal"
-        data-target="#sign-in-modal"
-        id="sign-in-button"
-      >
-        Sign In
-      </button>
+
       <div class="dropdown">
         <button
           class="btn btn-secondary dropdown-toggle"
@@ -46,6 +35,15 @@
           <a class="dropdown-item" data-page="allCharacters" href="#">All Characters</a>
         </div>
       </div>
+      <button
+        type="button"
+        class="btn btn-dark"
+        data-toggle="modal"
+        data-target="#sign-in-modal"
+        id="sign-in-button"
+      >
+        Sign In
+      </button>
     </nav>
     <div id="sign-in-modal" class="modal">
       <div class="modal-dialog" role="form">
@@ -172,7 +170,11 @@
 
     <div id="characterManagementPage" class="container main-content hidden">
       <div class="jumbotron" id="characterManagementPageJumbo">
-        <h1 class="display-3" id="characterPageHeader">Your Character Page</h1>
+        <div class="container">
+          <div class="row">
+            <h1 class="col display-3" id="characterPageHeader">Your Character Page</h1>
+          </div>
+        </div>
         <button class="btn btn-primary" data-page="addCharacter" id="addCharacterButton" disabled>Add Character</button>
         <!-- <button class="btn btn-danger" id="deleteCharacterButton" disabled>Delete Character</button> -->
         <div id="characterContainer" class="container">
@@ -183,6 +185,7 @@
 
     <div id="allCharactersPage" class="container main-content hidden">
       <div class="jumbotron" id="allCharactersPageJumbo">
+
         <h1 class="display-3" id="allCharacterPageHeader">All Characters Page</h1>
         <!-- <button class="btn btn-primary" data-page="addCharacter" id="addCharacterButton" disabled>Add Character</button> -->
         <!-- <button class="btn btn-danger" id="deleteCharacterButton" disabled>Delete Character</button> -->
@@ -207,9 +210,8 @@
         <div class="modal-content container">
           <div class="modal-header"><h5 class="modal-title">Select An Icon</h5></div>
           <div id="iconsBox" class="container">
+
           </div>
-          <label for="avatar">Choose your own</label>
-          <input class="mb-1" type="file" id="avatar" name="avatar" accept="image/png, image/jpeg">
         </div>
       </div>
     </div>
