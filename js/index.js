@@ -188,11 +188,18 @@ function addCharacter() {
       userCharacters.push(data.body);
       user.characters.push(data.body._id);
       //reset character management page
+      buildAllCharactersPage();
       buildCharacterManagementPage();
       $("#addCharacterPage").addClass('hidden');
       $("#characterManagementPage").removeClass('hidden');
     })
     .catch(err => console.log(err));
+}
+
+function uploadImage() {
+  fetch(`${url}/images/upload`, {
+    method: "POST",
+  })
 }
 
 userForm.addEventListener(
@@ -368,8 +375,9 @@ function initCommentCollapsers() {
 
 function buildCharacterManagementPage() {
   $("#characterPageHeader").text(`${user.displayName}'s Characters`);
-  $("#characterPageHeader").before(`<div class="col-3"><button data-target="#icon-modal" data-toggle="modal" class="btn btn-outline mt-0">Choose Avatar</button><img id="user-icon" src=${user.icon} alt="user-icon"/></div>`);
-
+  if(!document.getElementById("characterManagementIconColumn"))
+    $("#characterPageHeader").before(`<div id="characterManagementIconColumn" class="col-3"><button data-target="#icon-modal" data-toggle="modal" class="btn btn-outline mt-0">Choose Avatar</button><img id="user-icon" src=${user.icon} alt="user-icon"/></div>`);
+  $('#characterList').children().remove();
   // populateIconModal("user");
   $("#addCharacterButton").removeAttr("disabled");
   userCharacters.forEach((char, idx) => {
@@ -483,6 +491,7 @@ function addJournalListener() {
 }
 
 function buildAllCharactersPage() {
+  $("#allCharactersList").remove().children();
   allCharacters.forEach((char, idx) => {
     buildCharacterBox(char, idx, $("#allCharactersList"));
   });
@@ -569,7 +578,7 @@ function updateCharacter(content, type) {
 }
 
 function assignCharacters() {
-  userCharacter=[];
+  userCharacters=[];
     for(let i = 0; i<user.characters.length; i++){
       for(let j = 0; j<allCharacters.length; j++){
         if(user.characters[i]===allCharacters[j]._id){
