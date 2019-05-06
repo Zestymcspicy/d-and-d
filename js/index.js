@@ -94,8 +94,8 @@ async function getAllCharacters() {
 async function userSignIn() {
   await fetch(`${url}/users/login/`, {
     method: "POST",
-    // body: `displayName=LarryTheCat&password=ImaStupidCat`,
-    body: `displayName=${displayName.value}&password=${password.value}`,
+    body: `displayName=LarryTheCat&password=ImaStupidCat`,
+    // body: `displayName=${displayName.value}&password=${password.value}`,
     headers: {
       "Content-Type": "application/x-www-form-urlencoded"
     }
@@ -197,29 +197,19 @@ function addCharacter() {
 }
 
 function uploadImage(file) {
-  console.log(file)
-  var form = new FormData();
-form.append("image", file);
+  let form = new FormData();
+  form.append("image", file);
+  fetch(`${url}/images/upload`, {
+    method: "POST",
+    headers: {
+      "Accept": "*/*",
+      "Cache-Control": "no-cache",
+    },
+    body: form
+  })
+  .then(res=> res.json())
+  .then(data => console.log(data))
 
-var settings = {
-  "async": true,
-  "crossDomain": true,
-  "url": "http://localhost:1234/images/upload/",
-  "method": "POST",
-  "headers": {
-    "Accept": "*/*",
-    "Cache-Control": "no-cache",
-    "cache-control": "no-cache"
-  },
-  "processData": false,
-  "contentType": false,
-  "mimeType": "multipart/form-data",
-  "data": form
-}
-
-$.ajax(settings).done(function (response) {
-  console.log(response);
-});
 }
 
 userForm.addEventListener(
@@ -395,10 +385,12 @@ function initCommentCollapsers() {
 
 function buildCharacterManagementPage() {
   $("#characterPageHeader").text(`${user.displayName}'s Characters`);
-  if(!document.getElementById("characterManagementIconColumn"))
-    $("#characterPageHeader").before(`<div id="characterManagementIconColumn" class="col-3"><button data-target="#icon-modal" data-toggle="modal" class="btn btn-outline mt-0">Choose Avatar</button><img id="user-icon" src=${user.icon} alt="user-icon"/></div>`);
+  if(document.getElementById("characterManagementIconColumn")) {
+      $("#characterManagementIconColumn").remove();
+  }
+  $("#characterPageHeader").before(`<div id="characterManagementIconColumn" class="col-3"><button data-target="#icon-modal" data-toggle="modal" class="btn btn-outline mt-0">Choose Avatar</button><img id="user-icon" src=${user.icon} alt="user-icon"/></div>`);
   $('#characterList').children().remove();
-  // populateIconModal("user");
+  populateIconModal("user");
   $("#addCharacterButton").removeAttr("disabled");
   userCharacters.forEach((char, idx) => {
     buildCharacterBox(char, idx, $("#characterList"));
@@ -568,9 +560,7 @@ function populateIconModal(type) {
   }, false)
   function selectFile() {
     console.log(document.getElementById("icon-file-pick").files[0])
-    // let file = new FormData();
-    // file.append('image', fileInput.files[0]);
-    // console.log(file);
+
     uploadImage(fileInput.files[0]);
   }
 }
@@ -586,6 +576,7 @@ function updateUserAvatar(image){
     .then(res => res.json())
     .then(data => {
       user = data.user;
+      buildCharacterManagementPage();
     })
     .catch(err => console.log(err))
 }
@@ -634,8 +625,6 @@ function addJournals() {
         </div>
       </div>
       </div>`;
-    // console.log(div)
-    // return div;
     $('#journals-top').append(div);
   })
   getComments();
@@ -643,22 +632,17 @@ function addJournals() {
   $('#journals-top').append('<p>No Journals Yet</p>')
 }
 }
-//
-// function journalEditor() {
-//   let journalEditDivs = currentCharacter.journals.map(entry => {
-//     `<button>Edit</button><button>Delete</button>`
-//   })
-// }
+
 
 
 function initTests() {
   Promise.all([
-    // userSignIn(),
+    userSignIn(),
     getComments(),
     getAllCharacters()])
   .then((res) => {
-    // assignCharacters();
-    // buildCharacterManagementPage();
+    assignCharacters();
+    buildCharacterManagementPage();
     buildAllCharactersPage();
     initCommentClicks();
     // setForUser();
