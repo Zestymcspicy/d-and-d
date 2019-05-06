@@ -196,10 +196,30 @@ function addCharacter() {
     .catch(err => console.log(err));
 }
 
-function uploadImage() {
-  fetch(`${url}/images/upload`, {
-    method: "POST",
-  })
+function uploadImage(file) {
+  console.log(file)
+  var form = new FormData();
+form.append("image", file);
+
+var settings = {
+  "async": true,
+  "crossDomain": true,
+  "url": "http://localhost:1234/images/upload/",
+  "method": "POST",
+  "headers": {
+    "Accept": "*/*",
+    "Cache-Control": "no-cache",
+    "cache-control": "no-cache"
+  },
+  "processData": false,
+  "contentType": false,
+  "mimeType": "multipart/form-data",
+  "data": form
+}
+
+$.ajax(settings).done(function (response) {
+  console.log(response);
+});
 }
 
 userForm.addEventListener(
@@ -540,8 +560,19 @@ function populateIconModal(type) {
       }
     })
   });
-  $("#iconsBox").append(`<button class='btn icon-button d-flex'><label for="avatar">Choose your own</label>
-    <input class="mb-1" type="file" id="icon-file-pick" name="avatar" accept="image/png, image/jpeg"></div>`)
+  $("#iconsBox").append(`<form enctype="multipart/form-data" class='btn icon-button d-flex'><label for="avatar">Choose your own</label>
+    <input class="mb-1" type="file" id="icon-file-pick" name="avatar" accept="image/png, image/jpeg"></form>`)
+  const fileInput = document.getElementById("icon-file-pick");
+  fileInput.addEventListener("change", function() {
+    selectFile()
+  }, false)
+  function selectFile() {
+    console.log(document.getElementById("icon-file-pick").files[0])
+    // let file = new FormData();
+    // file.append('image', fileInput.files[0]);
+    // console.log(file);
+    uploadImage(fileInput.files[0]);
+  }
 }
 
 function updateUserAvatar(image){
