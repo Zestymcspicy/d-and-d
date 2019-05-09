@@ -203,12 +203,14 @@ async function getSignedRequest(file){
   .catch(err=> console.log(err))
 };
 
-function uploadImage(file, signedRequest, url) {
-  fetch(signedRequest, {
+async function uploadImage(file, signedRequest, iconUrl) {
+  return fetch(signedRequest, {
     method: "PUT",
     body: file
   })
-  .then(() => console.log(url))
+  .then(() => {
+    return iconUrl;
+  })
   .catch(err => console.log(err))
 }
 
@@ -556,27 +558,28 @@ function populateIconModal(type) {
     <input class="mb-1" type="file" id="icon-file-pick" name="avatar" accept="image/png, image/jpeg"></form>`)
   const fileInput = document.getElementById("icon-file-pick");
   fileInput.addEventListener("change", function() {
-    selectFile()
+    selectFile();
+    $("#icon-modal").modal("toggle")
   }, false)
 
   async function selectFile() {
     await getSignedRequest(fileInput.files[0])
     .then(res => {
       console.log(res);
-      // if(type==="character"){
-      //   updateCharacter(`${res.url}`, "icon");
-      // }
-      // if(type==="user") {
-        // updateUserAvatar(`${res.url}`);
-      // }
+      if(type==="character"){
+        updateCharacter(res, "icon");
+      }
+      if(type==="user") {
+        updateUserAvatar(res);
+      }
     })
   }
 }
 
-function updateUserAvatar(image){
+function updateUserAvatar(iconUrl){
     fetch(`${url}/users/${user._id}/image`, {
       method: 'POST',
-      body: `icon=${image}`,
+      body: `icon=${iconUrl}`,
       headers: {
         "Content-Type": "application/x-www-form-urlencoded"
       }
