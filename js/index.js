@@ -1,3 +1,4 @@
+// const s3 = new AWS.S3({endpoint: "http://dandd-uploads.s3.us-east-1.amazonaws.com/"});
 const signInAlert = $("#signInAlert");
 const charForm = document.forms["charForm"];
 const userForm = document.forms["userForm"];
@@ -104,7 +105,6 @@ async function userSignIn() {
     .then(res => res.json())
     .then(data => {
       if (data.success === true) {
-        console.log(data);
         user = data.user;
         postAuthObj = {
           icon: user.icon,
@@ -196,20 +196,20 @@ function addCharacter() {
     .catch(err => console.log(err));
 }
 
-function uploadImage(file) {
-  let form = new FormData();
-  form.append("image", file);
-  fetch(`${url}/images/upload`, {
-    method: "POST",
-    headers: {
-      "Accept": "*/*",
-      "Cache-Control": "no-cache",
-    },
-    body: form
-  })
-  .then(res=> res.json())
-  .then(data => console.log(data))
+async function getSignedRequest(file){
+  return fetch(`${url}/sign-s3?file-name=${file.name}&file-type=${file.type}`)
+  .then(res => res.json())
+  .then(data => uploadImage(file, data.signedRequest, data.url))
+  .catch(err=> console.log(err))
+};
 
+function uploadImage(file, signedRequest, url) {
+  fetch(signedRequest, {
+    method: "PUT",
+    body: file
+  })
+  .then(() => console.log(url))
+  .catch(err => console.log(err))
 }
 
 userForm.addEventListener(
@@ -558,10 +558,18 @@ function populateIconModal(type) {
   fileInput.addEventListener("change", function() {
     selectFile()
   }, false)
-  function selectFile() {
-    console.log(document.getElementById("icon-file-pick").files[0])
 
-    uploadImage(fileInput.files[0]);
+  async function selectFile() {
+    await getSignedRequest(fileInput.files[0])
+    .then(res => {
+      console.log(res);
+      // if(type==="character"){
+      //   updateCharacter(`${res.url}`, "icon");
+      // }
+      // if(type==="user") {
+        // updateUserAvatar(`${res.url}`);
+      // }
+    })
   }
 }
 
@@ -634,7 +642,6 @@ function addJournals() {
 }
 
 
-
 function initTests() {
   Promise.all([
     userSignIn(),
@@ -647,7 +654,9 @@ function initTests() {
     initCommentClicks();
     // setForUser();
   }).catch(err => console.log(err))
+
 }
+
 initTests();
 
 function setForUser() {
