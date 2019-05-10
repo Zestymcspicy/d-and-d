@@ -50,6 +50,12 @@ let iconsArray = [
 
 newUserButton.addEventListener("click", () => toggleSignInForm());
 
+$("#allGoodCheck").click(e => {
+  e.target.checked?
+  $("#characterSubmitButton").removeAttr('disabled'):
+  $("#characterSubmitButton").attr('disabled', true);
+})
+
 $("#addCharacterButton").click(e => switchMainContent(e.target));
 
 $("#addCharacterForm").submit(e => {
