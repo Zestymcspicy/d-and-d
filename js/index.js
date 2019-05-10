@@ -248,7 +248,6 @@ function initCommentClicks() {
 }
 
 function addSelectorDropdown(target) {
-  // let authorList = userCharacters.map(char => {name:char.name, icon: char.icon});
   const authorList = userCharacters.slice(0, userCharacters.length);
   authorList.unshift(user);
   const nameList = buildElement("name-list", "div");
@@ -342,9 +341,14 @@ function sendPost(content, displayName, parentDiv) {
 function getComments() {
   fetch(`${url}/comments/get`)
     .then(res => res.json())
-    .then(data => data.forEach(comment => buildComment(comment)))
+    .then(data => constructComments(data))
     .catch(err => console.log(err));
 }
+
+function constructComments(data) {
+  data.forEach(comment => buildComment(comment))
+}
+
 
 function buildComment(commentObj) {
   if(!commentObj.icon){
@@ -390,7 +394,7 @@ function buildCharacterManagementPage() {
   if(document.getElementById("characterManagementIconColumn")) {
       $("#characterManagementIconColumn").remove();
   }
-  $("#characterPageHeader").before(`<div id="characterManagementIconColumn" class="col-3"><button data-target="#icon-modal" data-toggle="modal" class="btn btn-outline mt-0">Choose Avatar</button><img id="user-icon" src=${user.icon} alt="user-icon"/></div>`);
+  $("#characterPageHeader").before(`<div id="characterManagementIconColumn" class="col-3"><button data-target="#icon-modal" data-toggle="modal" class="btn btn-outline mt-0">Choose Avatar</button><img id="user-icon" class="img-fluid mb-2" src=${user.icon} alt="user-icon"/></div>`);
   $('#characterList').children().remove();
   populateIconModal("user");
   $("#addCharacterButton").removeAttr("disabled");
@@ -505,7 +509,9 @@ function addJournalListener() {
 }
 
 function buildAllCharactersPage() {
-  $("#allCharactersList").remove().children();
+  if($("#allCharactersList").children()){
+    $("#allCharactersList").children().remove();
+  }
   allCharacters.forEach((char, idx) => {
     buildCharacterBox(char, idx, $("#allCharactersList"));
   });
@@ -655,7 +661,6 @@ function initTests() {
     buildCharacterManagementPage();
     buildAllCharactersPage();
     initCommentClicks();
-    // setForUser();
   }).catch(err => console.log(err))
 
 }

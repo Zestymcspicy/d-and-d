@@ -44,6 +44,9 @@ body {
 #addCharacter {
   display: none; }
 
+#allCharactersPage {
+  color: #3c404a; }
+
 .character-image {
   max-height: 200px;
   max-width: 200px; }
