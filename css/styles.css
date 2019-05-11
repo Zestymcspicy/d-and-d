@@ -25,6 +25,9 @@
   #journalEditorPageMain .ql-toolbar .ql-snow .ql-container {
     border: 1px solid #3c404a; }
 
+.hidePostsButton {
+  font-size: 14px; }
+
 body {
   font-family: Almendra, cursive;
   color: #cdc4b1;

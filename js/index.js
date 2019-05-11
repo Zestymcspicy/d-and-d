@@ -1,8 +1,9 @@
 // const s3 = new AWS.S3({endpoint: "http://dandd-uploads.s3.us-east-1.amazonaws.com/"});
+// const url = "http://localhost:1234";
+const url = "https://pacific-headland-65956.herokuapp.com"
 const signInAlert = $("#signInAlert");
 const charForm = document.forms["charForm"];
 const userForm = document.forms["userForm"];
-const url = "http://localhost:1234";
 const newUserFormLines = document.getElementById("forNewUser");
 const newUserButton = document.getElementById("newUserButton");
 const displayName = document.getElementById("inputUserName");
@@ -49,6 +50,10 @@ let iconsArray = [
 ];
 
 newUserButton.addEventListener("click", () => toggleSignInForm());
+
+$("#character-search-input").on("input", function(e) {
+  filterAllCharactersBy(e.target.value)
+})
 
 $("#allGoodCheck").click(e => {
   e.target.checked?
@@ -194,7 +199,7 @@ function addCharacter() {
       userCharacters.push(data.body);
       user.characters.push(data.body._id);
       //reset character management page
-      buildAllCharactersPage();
+      buildAllCharactersPage(allCharacters);
       buildCharacterManagementPage();
       $("#addCharacterPage").addClass('hidden');
       $("#characterManagementPage").removeClass('hidden');
@@ -232,6 +237,19 @@ userForm.addEventListener(
   },
   false
 );
+
+function filterAllCharactersBy(input) {
+  console.log(input.toString())
+  let filteredList = allCharacters
+  if(input!==""){
+    filteredList = allCharacters.filter(x => {
+      if(x.name.toLowerCase().includes(input.toLowerCase())){
+        return x;
+      };
+    })
+  }
+  buildAllCharactersPage(filteredList)
+}
 
 function initCommentClicks() {
   initCommentCollapsers();
@@ -514,11 +532,11 @@ function addJournalListener() {
   });
 }
 
-function buildAllCharactersPage() {
+function buildAllCharactersPage(characters) {
   if($("#allCharactersList").children()){
     $("#allCharactersList").children().remove();
   }
-  allCharacters.forEach((char, idx) => {
+  characters.forEach((char, idx) => {
     buildCharacterBox(char, idx, $("#allCharactersList"));
   });
   $(".characterSelectButton").click(e => {
@@ -665,7 +683,7 @@ function initTests() {
   .then((res) => {
     assignCharacters();
     buildCharacterManagementPage();
-    buildAllCharactersPage();
+    buildAllCharactersPage(allCharacters);
     initCommentClicks();
   }).catch(err => console.log(err))
 
