@@ -128,7 +128,6 @@ async function userSignIn() {
         return false;
       } else {
         $("#signInAlert").text(data.message);
-        console.log(data.message);
         $("#signInAlert").removeAttr("hidden");
       }
     });
@@ -147,7 +146,6 @@ async function addUser() {
     .then(res => res.json())
     .then(data => {
       if(data.message==="success"){
-        console.log(data)
         user = data.user;
         $("#sign-in-modal").modal("toggle");
         //basic setup on login
@@ -239,7 +237,6 @@ userForm.addEventListener(
 );
 
 function filterAllCharactersBy(input) {
-  console.log(input.toString())
   let filteredList = allCharacters
   if(input!==""){
     filteredList = allCharacters.filter(x => {
@@ -297,7 +294,6 @@ function addSelectorDropdown(target) {
 }
 //experiencing difficulty rebuilding input box after closing
 function resetCommentClicks() {
-  console.log("Hey")
   $(".comment-button").text("Comment");
   initCommentClicks();
 }
