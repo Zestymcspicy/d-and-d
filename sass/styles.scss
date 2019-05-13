@@ -15,6 +15,7 @@ $primary: #cdc4b1;
 
 
 .hidePostsButton {
+  font-size: 14px;
   background-color: transparent;
   border: none;
 }
@@ -38,11 +39,14 @@ $primary: #cdc4b1;
     color: $myGrey;
     .ql-toolbar .ql-snow .ql-container{
       border: 1px solid $myGrey;
+      color: $myGrey;
     }
 }
 
-.hidePostsButton{
-  font-size: 14px;
+#frontPage{
+  .hidePostsButton{
+    color: $primary;
+  }
 }
 
 body {
@@ -65,7 +69,13 @@ body {
 
 .personal-post {
   padding-bottom: 1%;
+  &:nth-of-type(n+2) {
+    position: relative;
+    left: -1rem;
+  }
 }
+
+
 
 #addCharacter {
   display: none;

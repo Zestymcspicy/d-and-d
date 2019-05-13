@@ -6,6 +6,7 @@
   display: block; }
 
 .hidePostsButton {
+  font-size: 14px;
   background-color: transparent;
   border: none; }
 
@@ -23,10 +24,11 @@
   background-color: #cdc4b1;
   color: #3c404a; }
   #journalEditorPageMain .ql-toolbar .ql-snow .ql-container {
-    border: 1px solid #3c404a; }
+    border: 1px solid #3c404a;
+    color: #3c404a; }
 
-.hidePostsButton {
-  font-size: 14px; }
+#frontPage .hidePostsButton {
+  color: #cdc4b1; }
 
 body {
   font-family: Almendra, cursive;
@@ -43,6 +45,9 @@ body {
 
 .personal-post {
   padding-bottom: 1%; }
+  .personal-post:nth-of-type(n+2) {
+    position: relative;
+    left: -1rem; }
 
 #addCharacter {
   display: none; }

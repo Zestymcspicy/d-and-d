@@ -375,9 +375,9 @@ function buildComment(commentObj) {
     commentObj.icon="images/baseDragon.png"
   }
   //comment template using template literal add disabled to comment button
-  let comment = `<div class="continer-fluid d-flex">
+  let comment = `<div class="personal-post mb-1 continer-fluid d-flex">
   <button class="hidePostsButton align-self-start">[-]</button>
-  <div class="media personal-post" id="childOf${commentObj.childOf}">
+  <div class="media pb-1" id="childOf${commentObj.childOf}">
   <img class="mr-3 avatar" src=${commentObj.icon} alt="dragon!">
     <div class="media-body" id=${commentObj._id}>
       <h6 class="mt-0 mb-1">${commentObj.displayName}</h6>
@@ -651,8 +651,18 @@ function addJournals() {
   if(currentCharacter.journals){
     const journalDivs = currentCharacter.journals.forEach(entry => {
       let quillText = new Quill(document.createElement("div"));
+      let deleteEdit;
+      if(currentCharacter.user === user._id){
+        deleteEdit = `<div class="mt-1 button-group">
+        <button type="button" class="btn btn-warning">Edit</button>
+        <button type="button" class="btn btn-danger">Delete</button>
+        </div>`
+      } else {
+        deleteEdit = "";
+      }
       quillText.setContents(entry.contents);
       const div = `<div id="journal${entry._id}">
+      ${deleteEdit}
       <div class="journal-entry">
       ${quillText.root.innerHTML}
       </div>
