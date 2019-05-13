@@ -106,7 +106,8 @@ async function getAllCharacters() {
 async function userSignIn() {
   await fetch(`${url}/users/login/`, {
     method: "POST",
-    body: `displayName=LarryTheCat&password=ImaStupidCat`,
+    body: `displayName=HopsTheDog&password=ImaCuteDog`,
+    // body: `displayName=LarryTheCat&password=ImaStupidCat`,
     // body: `displayName=${displayName.value}&password=${password.value}`,
     headers: {
       "Content-Type": "application/x-www-form-urlencoded"
@@ -237,12 +238,15 @@ userForm.addEventListener(
 );
 
 function filterAllCharactersBy(input) {
-  let filteredList = allCharacters
+  let filteredList = allCharacters;
   if(input!==""){
     filteredList = allCharacters.filter(x => {
       if(x.name.toLowerCase().includes(input.toLowerCase())){
         return x;
       };
+    })
+    filteredList.sort(function(a,b){
+      return a.name.toLowerCase().indexOf(input.toLowerCase())-b.name.toLowerCase().indexOf(input.toLowerCase());
     })
   }
   buildAllCharactersPage(filteredList)
