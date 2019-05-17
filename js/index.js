@@ -521,7 +521,14 @@ function addJournalListener() {
       </div>`
       $("#journalEditorPageMain").append(editor);
       quill = new Quill('#editor', {
-        theme: 'snow'
+        theme: 'snow',
+        modules: {
+          toolbar: [
+            [{header: [1, 2, 3] }],
+            ['bold', 'italic', 'underline'],
+            ['image']
+          ]
+        }
       });
       $("#submitNewJournalEntry").click((e)=> {
         addNewJournalEntry();
