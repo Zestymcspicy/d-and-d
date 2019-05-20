@@ -526,10 +526,21 @@ function addJournalListener() {
           toolbar: [
             [{header: [1, 2, 3] }],
             ['bold', 'italic', 'underline'],
-            ['image']
-          ]
-        }
+            ['image'],
+          ],
+        },
       });
+      var toolbar = quill.getModule('toolbar');
+      toolbar.addHandler('image', function(e) {
+        $("#hidden-file-input").trigger("click");
+        const fileInput = document.getElementById("hidden-file-input");
+        fileInput.addEventListener("change", function(e) {
+          const file = e.target.files[0];
+          const fileURL = `https://dandd-uploads.s3.amazonaws.com/${file.name}`
+          selectFile(file, "journal");
+          quillImageHandler(fileURL)
+        })
+      })
       $("#submitNewJournalEntry").click((e)=> {
         addNewJournalEntry();
         switchMainContent(e.target);
@@ -537,6 +548,13 @@ function addJournalListener() {
       })
     })
   });
+}
+
+function quillImageHandler(fileURL) {
+  var range = quill.getSelection();
+    if(fileURL){
+      quill.insertEmbed(range.index, 'image', fileURL, Quill.sources.USER);
+    }
 }
 
 function buildAllCharactersPage(characters) {
@@ -594,13 +612,15 @@ function populateIconModal(type) {
   $("#iconsBox").append(`<form enctype="multipart/form-data" class='btn icon-button d-flex'><label for="avatar">Choose your own</label>
     <input class="mb-1" type="file" id="icon-file-pick" name="avatar" accept="image/png, image/jpeg"></form>`)
   const fileInput = document.getElementById("icon-file-pick");
-  fileInput.addEventListener("change", function() {
-    selectFile();
+  fileInput.addEventListener("change", function(e) {
+    const file = e.target.files[0];
+    selectFile(file, type);
     $("#icon-modal").modal("toggle")
   }, false)
+}
 
-  async function selectFile() {
-    await getSignedRequest(fileInput.files[0])
+  async function selectFile(file, type) {
+    await getSignedRequest(file)
     .then(res => {
       console.log(res);
       if(type==="character"){
@@ -609,9 +629,11 @@ function populateIconModal(type) {
       if(type==="user") {
         updateUserAvatar(res);
       }
+      if(type==="journal") {
+        return res;
+      }
     })
   }
-}
 
 function updateUserAvatar(iconUrl){
     fetch(`${url}/users/${user._id}/image`, {
