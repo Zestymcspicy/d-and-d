@@ -446,16 +446,18 @@ function sendPost(content, displayName, parentDiv) {
 function getComments() {
   fetch(`${url}/comments/get`)
     .then(res => res.json())
-    .then(data => constructComments(data))
+    .then(data => {
+      allComments = data;
+      constructComments(allComments);
+    })
     .catch(err => console.log(err));
 }
 
-function constructComments(data) {
+function constructComments(comments) {
   if($(".comment-box").length>0){
     $(".comment-box").remove();
   }
-  allComments = data;
-  data.forEach(comment => {
+  comments.forEach(comment => {
     const votes = JSON.parse(comment.votes);
     comment.votes = votes;
     buildComment(comment);
