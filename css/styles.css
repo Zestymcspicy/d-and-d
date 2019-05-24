@@ -39,6 +39,9 @@ body {
   body .main-content {
     background-color: #3c404a; }
 
+.comment-vote-buttons {
+  margin-left: 20px; }
+
 .avatar {
   height: 40px;
   width: 40px; }
