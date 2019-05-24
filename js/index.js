@@ -107,8 +107,8 @@ async function getAllCharacters() {
 async function userSignIn() {
   await fetch(`${url}/users/login/`, {
     method: "POST",
-    body: `displayName=HopsTheDog&password=ImaCuteDog`,
-    // body: `displayName=LarryTheCat&password=ImaStupidCat`,
+    // body: `displayName=HopsTheDog&password=ImaCuteDog`,
+    body: `displayName=LarryTheCat&password=ImaStupidCat`,
     // body: `displayName=${displayName.value}&password=${password.value}`,
     headers: {
       "Content-Type": "application/x-www-form-urlencoded"
@@ -277,6 +277,9 @@ function initCommentClicks() {
   $(document).on("click", ".nay-button", function(e) {
     nay(e);
   });
+  if(allComments){
+    allComments.forEach(x => calculateVotability(x))
+  }
 }
 
 function aye(e) {
@@ -321,6 +324,18 @@ function nay(e) {
 
 function updateScore(comment) {
   document.getElementById(`${comment._id}-score`).innerHTML = comment.votes.score;
+  sendVotes(comment);
+}
+
+function sendVotes(comment) {
+  const votes = JSON.stringify(comment.votes)
+  fetch(`${url}/comments/${comment._id}`, {
+    method: "PATCH",
+    body: `votes=${votes}`,
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded"
+    }
+  })
 }
 
 function findComment(id) {
@@ -436,12 +451,15 @@ function getComments() {
 
 function constructComments(data) {
   allComments = data;
-  data.forEach(comment => buildComment(comment))
+  data.forEach(comment => {
+    const votes = JSON.parse(comment.votes);
+    comment.votes = votes;
+    buildComment(comment);
+  });
 }
 
 
 function buildComment(commentObj) {
-  const votability = calculateVotability(commentObj)
   if(!commentObj.votes) {
     commentObj.votes = {
       score: 0
@@ -450,8 +468,6 @@ function buildComment(commentObj) {
   if(!commentObj.icon){
     commentObj.icon="images/baseDragon.png"
   }
-  let disableNay = votability.nayable?"":"disabled";
-  let disableAye = votability.ayeable?"":"disabled";
 
   //comment template using template literal add disabled to comment button
   let comment = `<div class="personal-post mb-1 continer-fluid d-flex">
@@ -465,8 +481,8 @@ function buildComment(commentObj) {
       <span id="${commentObj._id}-score" class="comment-score">${commentObj.votes.score}</span>
         <div class="btn-group comment-vote-buttons" role="group" disabled>
           <button type="button" class="btn-light btn btn-sm mr-1 comment-button">Comment</button>
-          <button type="button" id="${commentObj._id}-aye" data-forComment=${commentObj._id} class="btn-light btn btn-sm mr-1 aye-button" ${disableAye}>Aye!</button>
-          <button type="button" id="${commentObj._id}-nay" data-forComment=${commentObj._id} class="btn-light btn btn-sm nay-button" ${disableNay}>Nay!</button>
+          <button type="button" id="${commentObj._id}-aye" data-forComment=${commentObj._id} class="btn-light btn btn-sm mr-1 aye-button">Aye!</button>
+          <button type="button" id="${commentObj._id}-nay" data-forComment=${commentObj._id} class="btn-light btn btn-sm nay-button">Nay!</button>
         </div>
       </div>
     </div>
@@ -477,21 +493,17 @@ function buildComment(commentObj) {
 }
 
 function calculateVotability(commentObj) {
-  let votability = {
-    ayeable: true,
-    nayable: true
-  }
+
   if(commentObj.votes) {
     if(commentObj.votes.hasOwnProperty(postAuthObj.auth_id)) {
       if(commentObj.votes[postAuthObj.auth_id]==="aye") {
-        votability.ayeable=false;
+        $(`#${commentObj._id}-aye`).prop("disabled", true)
       }
       if(commentObj.votes[postAuthObj.auth_id]==="nay") {
-        votability.nayable=false;
+        $(`#${commentObj._id}-nay`).prop("disabled", true)
       }
     }
   }
-  return votability;
 }
 
 function initCommentCollapsers() {
