@@ -451,6 +451,9 @@ function getComments() {
 }
 
 function constructComments(data) {
+  if($(".comment-box").length>0){
+    $(".comment-box").remove();
+  }
   allComments = data;
   data.forEach(comment => {
     const votes = JSON.parse(comment.votes);
@@ -471,7 +474,7 @@ function buildComment(commentObj) {
   }
 
   //comment template using template literal add disabled to comment button
-  let comment = `<div class="personal-post mb-1 continer-fluid d-flex">
+  let comment = `<div class="comment-box mb-1 continer-fluid d-flex">
   <button class="hidePostsButton align-self-start">[-]</button>
   <div class="media pb-1" id="childOf${commentObj.childOf}">
   <img class="mr-3 avatar" src=${commentObj.icon} alt="dragon!">
@@ -726,21 +729,21 @@ function populateIconModal(type) {
   }, false)
 }
 
-  async function selectFile(file, type) {
-    await getSignedRequest(file)
-    .then(res => {
-      console.log(res);
-      if(type==="character"){
-        updateCharacter(res, "icon");
-      }
-      if(type==="user") {
-        updateUserAvatar(res);
-      }
-      if(type==="journal") {
-        return res;
-      }
-    })
-  }
+async function selectFile(file, type) {
+  await getSignedRequest(file)
+  .then(res => {
+    console.log(res);
+    if(type==="character"){
+      updateCharacter(res, "icon");
+    }
+    if(type==="user") {
+      updateUserAvatar(res);
+    }
+    if(type==="journal") {
+      return res;
+    }
+  })
+}
 
 function updateUserAvatar(iconUrl){
     fetch(`${url}/users/${user._id}/image`, {

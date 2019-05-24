@@ -46,9 +46,9 @@ body {
   height: 40px;
   width: 40px; }
 
-.personal-post {
+.comment-box {
   padding-bottom: 1%; }
-  .personal-post:nth-of-type(n+2) {
+  .comment-box:nth-of-type(n+2) {
     position: relative;
     left: -1rem; }
 
