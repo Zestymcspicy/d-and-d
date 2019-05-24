@@ -263,7 +263,7 @@ function initCommentClicks() {
     }
     e.target.innerHTML = "Comment As...";
     addSelectorDropdown(e.target);
-    buildInputBox(e.target, "mediaComment");
+    // buildInputBox(e.target, "mediaComment");
     $(document).off("click", ".comment-button");
     e.target.addEventListener("click", function(e) {
       e.stopImmediatePropagation();
@@ -371,6 +371,7 @@ function addSelectorDropdown(target) {
       postAuthObj.name = x.name;
       postAuthObj.icon = x.icon;
       nameList.remove();
+      buildInputBox(target, "mediaComment");
     })
   })
   nameList.style.display="block";
