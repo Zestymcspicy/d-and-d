@@ -74,8 +74,27 @@ $(".dropdown-item").click(e => switchMainContent(e.target));
 
 //switches main content to the data-page attribute of the selected button
 function switchMainContent(target) {
+  const title = target.dataset.page;
+  window.history.pushState({}, title, `${window.location.origin}/${title}`);
   $(".main-content").addClass("hidden");
-  $(`#${target.dataset.page}Page`).removeClass("hidden");
+  $(`#${title}Page`).removeClass("hidden");
+}
+
+window.onloadstart = () => {
+  changePage();
+}
+
+window.onpopstate = () => {
+  changePage();
+}
+
+function changePage() {
+  let page = window.location.pathname.slice(1, window.location.pathname.length)
+  if(page===""){
+    page="front";
+  }
+  $(".main-content").addClass("hidden");
+  $(`#${page}Page`).removeClass("hidden");
 }
 
 function buildElement(elName, type) {
