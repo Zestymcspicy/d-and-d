@@ -80,10 +80,6 @@ function switchMainContent(target) {
   $(`#${title}Page`).removeClass("hidden");
 }
 
-window.onloadstart = () => {
-  changePage();
-}
-
 window.onpopstate = () => {
   changePage();
 }
@@ -764,6 +760,34 @@ async function selectFile(file, type) {
       return res;
     }
   })
+}
+
+async function compressImage(file) {
+  const width = 512;
+  const fileName = file.name;
+  const fileType = file.type;
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onload = event => {
+    const img = new Image();
+    img.src = event.target.result;
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const scaleFactor = width/img.width;
+      canvas.width = width;
+      canvas.height = img.height * scaleFactor;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      let newFile;
+      ctx.canvas.toBlob((blob) => {
+        newFile = new File([blob], fileName, {
+          type: fileType,
+          lastModified: Date.now()
+        });
+      }, fileType, 1)
+      return newFile;
+    }
+  }
 }
 
 function updateUserAvatar(iconUrl){
