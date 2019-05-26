@@ -234,7 +234,8 @@ async function uploadImage(file, signedRequest, iconUrl) {
     method: "PUT",
     body: file
   })
-  .then(() => {
+  .then((res) => {
+    console.log(res);
     return iconUrl;
   })
   .catch(err => console.log(err))
@@ -452,7 +453,6 @@ function sendPost(content, displayName, parentDiv) {
   })
     .then(res => res.json())
     .then(data => {
-      console.log(data);
       buildComment(data.comment);
     })
     .catch(err => console.log(err));
@@ -664,8 +664,10 @@ function addJournalListener() {
         fileInput.addEventListener("change", function(e) {
           const file = e.target.files[0];
           const fileURL = `https://dandd-uploads.s3.amazonaws.com/${file.name}`
-          selectFile(file, "journal");
-          quillImageHandler(fileURL)
+          selectFile(file, "journal")
+          .then(res => {
+            quillImageHandler(res);
+          })
         })
       })
       $("#submitNewJournalEntry").click((e)=> {
@@ -747,9 +749,8 @@ function populateIconModal(type) {
 }
 
 async function selectFile(file, type) {
-  await getSignedRequest(file)
+  return getSignedRequest(file)
   .then(res => {
-    console.log(res);
     if(type==="character"){
       updateCharacter(res, "icon");
     }
@@ -767,25 +768,31 @@ async function compressImage(file) {
   const fileName = file.name;
   const fileType = file.type;
   const reader = new FileReader();
+  const canvas = document.createElement('canvas');
   reader.readAsDataURL(file);
   reader.onload = event => {
     const img = new Image();
     img.src = event.target.result;
     img.onload = () => {
-      const canvas = document.createElement('canvas');
       const scaleFactor = width/img.width;
       canvas.width = width;
       canvas.height = img.height * scaleFactor;
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       let newFile;
-      ctx.canvas.toBlob((blob) => {
+      var promise = ctx.canvas.toBlob((blob) => {
         newFile = new File([blob], fileName, {
           type: fileType,
           lastModified: Date.now()
         });
       }, fileType, 1)
-      return newFile;
+      promise.then(() => {
+        return newFile
+      },
+      function(){
+        console.log("Problem")
+      }
+      )
     }
   }
 }
@@ -816,7 +823,6 @@ function updateCharacter(content, type) {
   })
     .then(res => res.json())
     .then(data => {
-      console.log(data)
       allCharacters.push(data.body)
       currentCharacter = data.body
       buildCharacterPage(currentCharacter);
