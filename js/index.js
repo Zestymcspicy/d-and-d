@@ -1,6 +1,5 @@
-// const s3 = new AWS.S3({endpoint: "http://dandd-uploads.s3.us-east-1.amazonaws.com/"});
-// const url = "http://localhost:1234";
-const url = "https://pacific-headland-65956.herokuapp.com"
+const url = "http://localhost:1234";
+// const url = "https://pacific-headland-65956.herokuapp.com"
 const signInAlert = $("#signInAlert");
 const charForm = document.forms["charForm"];
 const userForm = document.forms["userForm"];
@@ -224,7 +223,10 @@ function addCharacter() {
 
 async function getSignedRequest(file){
   return fetch(`${url}/sign-s3?file-name=${file.name}&file-type=${file.type}`)
-  .then(res => res.json())
+  .then(res => {
+    console.log(res)
+    return res.json()
+  })
   .then(data => uploadImage(file, data.signedRequest, data.url))
   .catch(err=> console.log(err))
 };
@@ -629,7 +631,7 @@ function buildCharacterPage(currentCharacter){
   <div id="journals-top"></div>
   </div>`;
   $("#characterPageJumbo").append(charInfo);
-  addJournals()
+  addJournals(false)
   if (editButton !== "") {
     addJournalListener();
     addEditListener();
@@ -640,44 +642,66 @@ function buildCharacterPage(currentCharacter){
 function addJournalListener() {
   $("#editJournal").click(e => {
     switchMainContent(e.target)
-    $("#openNewJournalEntry").click(e=> {
-      const editor=`<div id="editorContainer">
-      <div id="editor">
-      </div>
-      <button id="submitNewJournalEntry" data-page="character">Submit</button>
-      </div>`
-      $("#journalEditorPageMain").append(editor);
-      quill = new Quill('#editor', {
-        theme: 'snow',
-        modules: {
-          toolbar: [
-            [{header: [1, 2, 3] }],
-            ['bold', 'italic', 'underline'],
-            ['image'],
-          ],
-        },
-      });
-      var toolbar = quill.getModule('toolbar');
-      toolbar.addHandler('image', function(e) {
-        $("#hidden-file-input").trigger("click");
-        const fileInput = document.getElementById("hidden-file-input");
-        fileInput.addEventListener("change", function(e) {
-          const file = e.target.files[0];
-          const fileURL = `https://dandd-uploads.s3.amazonaws.com/${file.name}`
-          selectFile(file, "journal")
-          .then(res => {
-            quillImageHandler(res);
-          })
-        })
-      })
-      $("#submitNewJournalEntry").click((e)=> {
-        addNewJournalEntry();
-        switchMainContent(e.target);
-        buildCharacterPage(currentCharacter);
+    addJournals(true);
+    $("#openNewJournalEntry").click(e => addJournalEditor(e));
+  })
+}
+
+function addJournalEditor(e) {
+  const editor=`<div>
+  <div id="editor">
+  </div>
+  <button id="submitNewJournalEntry" data-page="character">Submit</button>
+  </div>`
+  $("#editorContainer").append(editor);
+  initializeEditor(e);
+}
+
+function initializeEditor(e) {
+  console.log(e.target.id)
+  quill = new Quill('#editor', {
+    theme: 'snow',
+    modules: {
+      toolbar: [
+        [{header: [1, 2, 3] }],
+        ['bold', 'italic', 'underline'],
+        ['image'],
+      ],
+    },
+  });
+  var toolbar = quill.getModule('toolbar');
+  // $("#openNewJournalEntry").off('click');
+  toolbar.addHandler('image', function(e) {
+    $("#hidden-file-input").trigger("click");
+    const fileInput = document.getElementById("hidden-file-input");
+    fileInput.addEventListener("change", function(e) {
+      const file = e.target.files[0];
+      const fileURL = `https://dandd-uploads.s3.amazonaws.com/${file.name}`
+      selectFile(file, "journal")
+      .then(res => {
+        quillImageHandler(res);
       })
     })
-  });
+  })
+  if(e.target.id==="openNewJournalEntry"){
+    $("#openNewJournalEntry").text("Cancel");
+    $("#openNewJournalEntry").click(() => {
+      $("#editorContainer").empty();
+      $("#openNewJournalEntry").off("click");
+      $("#openNewJournalEntry").text("Add New")
+      $("#openNewJournalEntry").click(e => addJournalEditor(e));
+    });
+  }
+  if(e.target.classList.contains("editThisJournal")) {
+      console.log("aThing")
+    }
+  $("#submitNewJournalEntry").click((e)=> {
+    addNewJournalEntry();
+    switchMainContent(e.target);
+    buildCharacterPage(currentCharacter);
+  })
 }
+
 
 function quillImageHandler(fileURL) {
   var range = quill.getSelection();
@@ -749,7 +773,12 @@ function populateIconModal(type) {
 }
 
 async function selectFile(file, type) {
-  return getSignedRequest(file)
+  console.log(file);
+  return compressImage(file)
+  .then(newFile => {
+    console.log(newFile)
+    return getSignedRequest(newFile)
+  })
   .then(res => {
     if(type==="character"){
       updateCharacter(res, "icon");
@@ -764,6 +793,7 @@ async function selectFile(file, type) {
 }
 
 async function compressImage(file) {
+  return new Promise(function(res, rej) {
   const width = 512;
   const fileName = file.name;
   const fileType = file.type;
@@ -779,22 +809,16 @@ async function compressImage(file) {
       canvas.height = img.height * scaleFactor;
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      let newFile;
-      var promise = ctx.canvas.toBlob((blob) => {
-        newFile = new File([blob], fileName, {
+      ctx.canvas.toBlob((blob) => {
+        const newFile = new File([blob], fileName, {
           type: fileType,
           lastModified: Date.now()
         });
+        res(newFile)
       }, fileType, 1)
-      promise.then(() => {
-        return newFile
-      },
-      function(){
-        console.log("Problem")
       }
-      )
-    }
   }
+})
 }
 
 function updateUserAvatar(iconUrl){
@@ -841,16 +865,18 @@ function assignCharacters() {
     }
 }
 
-function addJournals() {
+function addJournals(owner) {
+  let topDiv = owner ? '#thisCharactersJournals':'#journals-top';
+  $(topDiv).empty();
   if(currentCharacter.journals){
     const journalDivs = currentCharacter.journals.forEach(entry => {
       let quillText = new Quill(document.createElement("div"));
       let deleteEdit;
-      if(currentCharacter.user === user._id){
+      if(owner===true){
         deleteEdit = `<div class="mt-1 button-group">
-        <button type="button" class="btn btn-warning">Edit</button>
-        <button type="button" class="btn btn-danger">Delete</button>
-        </div>`
+        <button id="${entry._id}edit" data-target=${entry._id} type="button" class="btn btn-warning editThisJournal">Edit</button>
+        <button id="${entry._id}delete" data-target=${entry._id} type="button" class="btn btn-danger deleteThisJournal">Delete</button>
+        </div>`;
       } else {
         deleteEdit = "";
       }
@@ -866,13 +892,52 @@ function addJournals() {
         </div>
       </div>
       </div>`;
-    $('#journals-top').append(div);
+    $(topDiv).append(div);
   })
+  if(owner===true){
+    addJournalManagement()
+  }
   getComments();
 } else {
-  $('#journals-top').append('<p>No Journals Yet</p>')
+  $(topDiv).append('<p>No Journals Yet</p>')
 }
 }
+
+function addJournalManagement() {
+  $(".deleteThisJournal").click(e => deleteJournal(e.target))
+  $(".editThisJournal").click(e => editJournal(e))
+}
+
+function editJournal(e) {
+  const journalId = e.target.dataset.target;
+  // $(`#${journalId}`).
+}
+
+function deleteJournal(target) {
+  const journalId = target.dataset.target;
+  console.log(journalId)
+  if(confirm("Are you sure you want to delete this journal?")){
+    return fetch(`${url}/characters/delete-journal`, {
+      method: "PUT",
+      body: `character_id=${currentCharacter._id}&journal_id=${journalId}`,
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      }
+    })
+    .then(res => res.json())
+    .then(data => {
+      if(data.message==="journal deleted"){
+        const newJournals = currentCharacter.journals.filter(journal => journal._id.toString() !== data.journal_id.toString());
+        currentCharacter.journals = newJournals;
+        addJournals(true);
+      }
+    })
+    .catch(err =>console.log(err))
+  }else{
+    return;
+  };
+}
+
 
 
 function initTests() {
