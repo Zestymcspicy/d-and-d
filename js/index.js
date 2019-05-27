@@ -772,7 +772,12 @@ function populateIconModal(type) {
 }
 
 async function selectFile(file, type) {
-  return getSignedRequest(file)
+  console.log(file);
+  return compressImage(file)
+  .then(newFile => {
+    console.log(newFile)
+    return getSignedRequest(newFile)
+  })
   .then(res => {
     if(type==="character"){
       updateCharacter(res, "icon");
@@ -787,6 +792,7 @@ async function selectFile(file, type) {
 }
 
 async function compressImage(file) {
+  return new Promise(function(res, rej) {
   const width = 512;
   const fileName = file.name;
   const fileType = file.type;
@@ -802,22 +808,16 @@ async function compressImage(file) {
       canvas.height = img.height * scaleFactor;
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      let newFile;
-      var promise = ctx.canvas.toBlob((blob) => {
-        newFile = new File([blob], fileName, {
+      ctx.canvas.toBlob((blob) => {
+        const newFile = new File([blob], fileName, {
           type: fileType,
           lastModified: Date.now()
         });
+        res(newFile)
       }, fileType, 1)
-      promise.then(() => {
-        return newFile
-      },
-      function(){
-        console.log("Problem")
       }
-      )
-    }
   }
+})
 }
 
 function updateUserAvatar(iconUrl){
