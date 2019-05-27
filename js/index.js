@@ -629,7 +629,7 @@ function buildCharacterPage(currentCharacter){
   <div id="journals-top"></div>
   </div>`;
   $("#characterPageJumbo").append(charInfo);
-  addJournals()
+  addJournals(false)
   if (editButton !== "") {
     addJournalListener();
     addEditListener();
@@ -640,44 +640,56 @@ function buildCharacterPage(currentCharacter){
 function addJournalListener() {
   $("#editJournal").click(e => {
     switchMainContent(e.target)
-    $("#openNewJournalEntry").click(e=> {
-      const editor=`<div id="editorContainer">
-      <div id="editor">
-      </div>
-      <button id="submitNewJournalEntry" data-page="character">Submit</button>
-      </div>`
-      $("#journalEditorPageMain").append(editor);
-      quill = new Quill('#editor', {
-        theme: 'snow',
-        modules: {
-          toolbar: [
-            [{header: [1, 2, 3] }],
-            ['bold', 'italic', 'underline'],
-            ['image'],
-          ],
-        },
-      });
-      var toolbar = quill.getModule('toolbar');
-      toolbar.addHandler('image', function(e) {
-        $("#hidden-file-input").trigger("click");
-        const fileInput = document.getElementById("hidden-file-input");
-        fileInput.addEventListener("change", function(e) {
-          const file = e.target.files[0];
-          const fileURL = `https://dandd-uploads.s3.amazonaws.com/${file.name}`
-          selectFile(file, "journal")
-          .then(res => {
-            quillImageHandler(res);
-          })
-        })
-      })
-      $("#submitNewJournalEntry").click((e)=> {
-        addNewJournalEntry();
-        switchMainContent(e.target);
-        buildCharacterPage(currentCharacter);
+    addJournals(true);
+    $("#openNewJournalEntry").click(e => addJournalEditor(e));
+  })
+}
+
+function addJournalEditor(e) {
+  const editor=`<div>
+  <div id="editor">
+  </div>
+  <button id="submitNewJournalEntry" data-page="character">Submit</button>
+  </div>`
+  $("#editorContainer").append(editor);
+  quill = new Quill('#editor', {
+    theme: 'snow',
+    modules: {
+      toolbar: [
+        [{header: [1, 2, 3] }],
+        ['bold', 'italic', 'underline'],
+        ['image'],
+      ],
+    },
+  });
+  var toolbar = quill.getModule('toolbar');
+  // $("#openNewJournalEntry").off('click');
+  toolbar.addHandler('image', function(e) {
+    $("#hidden-file-input").trigger("click");
+    const fileInput = document.getElementById("hidden-file-input");
+    fileInput.addEventListener("change", function(e) {
+      const file = e.target.files[0];
+      const fileURL = `https://dandd-uploads.s3.amazonaws.com/${file.name}`
+      selectFile(file, "journal")
+      .then(res => {
+        quillImageHandler(res);
       })
     })
+  })
+  $("#openNewJournalEntry").text("Cancel");
+  $("#openNewJournalEntry").click(() => {
+    $("#editorContainer").empty();
+    $("#openNewJournalEntry").off("click");
+    $("#openNewJournalEntry").text("Add New")
+    $("#openNewJournalEntry").click(e => addJournalEditor(e));
   });
+  $("#submitNewJournalEntry").click((e)=> {
+    addNewJournalEntry();
+    switchMainContent(e.target);
+    buildCharacterPage(currentCharacter);
+  })
 }
+
 
 function quillImageHandler(fileURL) {
   var range = quill.getSelection();
@@ -841,16 +853,17 @@ function assignCharacters() {
     }
 }
 
-function addJournals() {
+function addJournals(owner) {
+  let topDiv = owner ? '#thisCharactersJournals':'#journals-top';
   if(currentCharacter.journals){
     const journalDivs = currentCharacter.journals.forEach(entry => {
       let quillText = new Quill(document.createElement("div"));
       let deleteEdit;
-      if(currentCharacter.user === user._id){
+      if(owner===true){
         deleteEdit = `<div class="mt-1 button-group">
-        <button type="button" class="btn btn-warning">Edit</button>
-        <button type="button" class="btn btn-danger">Delete</button>
-        </div>`
+        <button id="${entry._id}edit" type="button" class="btn btn-warning editThisJournal">Edit</button>
+        <button id="${entry._id}deleted" type="button" class="btn btn-danger deleteThisJournal">Delete</button>
+        </div>`;
       } else {
         deleteEdit = "";
       }
@@ -866,12 +879,19 @@ function addJournals() {
         </div>
       </div>
       </div>`;
-    $('#journals-top').append(div);
+    $(topDiv).append(div);
   })
+  if(owner===true){
+    addJournalManagement()
+  }
   getComments();
 } else {
-  $('#journals-top').append('<p>No Journals Yet</p>')
+  $(topDiv).append('<p>No Journals Yet</p>')
 }
+}
+
+function addJournalManagement() {
+
 }
 
 
