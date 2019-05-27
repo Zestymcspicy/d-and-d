@@ -1,6 +1,5 @@
-// const s3 = new AWS.S3({endpoint: "http://dandd-uploads.s3.us-east-1.amazonaws.com/"});
-// const url = "http://localhost:1234";
-const url = "https://pacific-headland-65956.herokuapp.com"
+const url = "http://localhost:1234";
+// const url = "https://pacific-headland-65956.herokuapp.com"
 const signInAlert = $("#signInAlert");
 const charForm = document.forms["charForm"];
 const userForm = document.forms["userForm"];
@@ -855,14 +854,15 @@ function assignCharacters() {
 
 function addJournals(owner) {
   let topDiv = owner ? '#thisCharactersJournals':'#journals-top';
+  $(topDiv).empty();
   if(currentCharacter.journals){
     const journalDivs = currentCharacter.journals.forEach(entry => {
       let quillText = new Quill(document.createElement("div"));
       let deleteEdit;
       if(owner===true){
         deleteEdit = `<div class="mt-1 button-group">
-        <button id="${entry._id}edit" type="button" class="btn btn-warning editThisJournal">Edit</button>
-        <button id="${entry._id}deleted" type="button" class="btn btn-danger deleteThisJournal">Delete</button>
+        <button id="${entry._id}edit" data-target=${entry._id} type="button" class="btn btn-warning editThisJournal">Edit</button>
+        <button id="${entry._id}delete" data-target=${entry._id} type="button" class="btn btn-danger deleteThisJournal">Delete</button>
         </div>`;
       } else {
         deleteEdit = "";
@@ -891,8 +891,34 @@ function addJournals(owner) {
 }
 
 function addJournalManagement() {
-
+  $(".deleteThisJournal").click(e => deleteJournal(e.target))
 }
+
+function deleteJournal(target) {
+  let journalId = target.dataset.target;
+  console.log(journalId)
+  if(confirm("Are you sure you want to delete this journal?")){
+    return fetch(`${url}/characters/delete-journal`, {
+      method: "PUT",
+      body: `character_id=${currentCharacter._id}&journal_id=${journalId}`,
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      }
+    })
+    .then(res => res.json())
+    .then(data => {
+      if(data.message==="journal deleted"){
+        const newJournals = currentCharacter.journals.filter(journal => journal._id.toString() !== data.journal_id.toString());
+        currentCharacter.journals = newJournals;
+        addJournals(true);
+      }
+    })
+    .catch(err =>console.log(err))
+  }else{
+    return;
+  };
+}
+
 
 
 function initTests() {
