@@ -223,7 +223,10 @@ function addCharacter() {
 
 async function getSignedRequest(file){
   return fetch(`${url}/sign-s3?file-name=${file.name}&file-type=${file.type}`)
-  .then(res => res.json())
+  .then(res => {
+    console.log(res)
+    return res.json()
+  })
   .then(data => uploadImage(file, data.signedRequest, data.url))
   .catch(err=> console.log(err))
 };
@@ -651,6 +654,10 @@ function addJournalEditor(e) {
   <button id="submitNewJournalEntry" data-page="character">Submit</button>
   </div>`
   $("#editorContainer").append(editor);
+  initializeEditor(e);
+}
+
+function initializeEditor(e) {
   quill = new Quill('#editor', {
     theme: 'snow',
     modules: {
@@ -675,13 +682,18 @@ function addJournalEditor(e) {
       })
     })
   })
-  $("#openNewJournalEntry").text("Cancel");
-  $("#openNewJournalEntry").click(() => {
-    $("#editorContainer").empty();
-    $("#openNewJournalEntry").off("click");
-    $("#openNewJournalEntry").text("Add New")
-    $("#openNewJournalEntry").click(e => addJournalEditor(e));
-  });
+  if(e.target.id==="openNewJournalEntry"){
+    $("#openNewJournalEntry").text("Cancel");
+    $("#openNewJournalEntry").click(() => {
+      $("#editorContainer").empty();
+      $("#openNewJournalEntry").off("click");
+      $("#openNewJournalEntry").text("Add New")
+      $("#openNewJournalEntry").click(e => addJournalEditor(e));
+    });
+  }
+  if(e.target.classList.contains("editThisJournal")) {
+      console.log("aThing")
+    }
   $("#submitNewJournalEntry").click((e)=> {
     addNewJournalEntry();
     switchMainContent(e.target);
@@ -892,10 +904,16 @@ function addJournals(owner) {
 
 function addJournalManagement() {
   $(".deleteThisJournal").click(e => deleteJournal(e.target))
+  $(".editThisJournal").click(e => editJournal(e))
+}
+
+function editJournal(e) {
+  const journalId = e.target.dataset.target;
+  // $(`#${journalId}`).
 }
 
 function deleteJournal(target) {
-  let journalId = target.dataset.target;
+  const journalId = target.dataset.target;
   console.log(journalId)
   if(confirm("Are you sure you want to delete this journal?")){
     return fetch(`${url}/characters/delete-journal`, {
