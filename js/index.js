@@ -1,5 +1,5 @@
-const url = "http://localhost:1234";
-// const url = "https://pacific-headland-65956.herokuapp.com"
+// const url = "http://localhost:5000";
+const url = "https://pacific-headland-65956.herokuapp.com"
 const signInAlert = $("#signInAlert");
 const charForm = document.forms["charForm"];
 const userForm = document.forms["userForm"];
@@ -583,6 +583,12 @@ function buildCharacterBox(characterObj, idx, page) {
   page.append(charBox);
 }
 
+function removeEditor() {
+  if($('#editor')) {
+    $('#editorContainer').empty();
+  }
+}
+
 function selectCharacter(target) {
   currentCharacter = allCharacters.filter(char => char._id === target.id)[0];
   buildCharacterPage(currentCharacter);
@@ -648,6 +654,7 @@ function addJournalListener() {
 }
 
 function addJournalEditor(e) {
+  removeEditor()
   const editor=`<div>
   <div id="editor">
   </div>
@@ -658,6 +665,7 @@ function addJournalEditor(e) {
 }
 
 function initializeEditor(e) {
+  let journalId;
   quill = new Quill('#editor', {
     theme: 'snow',
     modules: {
@@ -675,7 +683,6 @@ function initializeEditor(e) {
     const fileInput = document.getElementById("hidden-file-input");
     fileInput.addEventListener("change", function(e) {
       const file = e.target.files[0];
-      const fileURL = `https://dandd-uploads.s3.amazonaws.com/${file.name}`
       selectFile(file, "journal")
       .then(res => {
         quillImageHandler(res);
@@ -683,6 +690,7 @@ function initializeEditor(e) {
     })
   })
   if(e.target.id==="openNewJournalEntry"){
+    journalId = (Date.now()).toString();
     $("#openNewJournalEntry").text("Cancel");
     $("#openNewJournalEntry").click(() => {
       $("#editorContainer").empty();
@@ -692,10 +700,16 @@ function initializeEditor(e) {
     });
   }
   if(e.target.classList.contains("editThisJournal")) {
-      console.log("aThing")
+    journalId = e.target.dataset.target
+    console.log(journalId)
+    const currentJournal = currentCharacter.journals.filter(x => (x._id.toString()===journalId))[0];
+    quill.setContents(currentJournal.contents)
     }
   $("#submitNewJournalEntry").click((e)=> {
-    addNewJournalEntry();
+    $("#openNewJournalEntry").text("Add New")
+    $("#editorContainer").empty();
+    //TODO: Edit functions to deal with _id being Date.now()
+    addNewJournalEntry(journalId);
     switchMainContent(e.target);
     buildCharacterPage(currentCharacter);
   })
@@ -723,10 +737,11 @@ function buildAllCharactersPage(characters) {
 }
 
 
-function addNewJournalEntry() {
+function addNewJournalEntry(journalId) {
+  console.log(journalId)
   let contents = quill.getContents();
   let entry = {
-    _id: Date.now(),
+    _id: journalId,
     contents: contents
   };
   entry = JSON.stringify(entry);
@@ -866,9 +881,14 @@ function assignCharacters() {
 
 function addJournals(owner) {
   let topDiv = owner ? '#thisCharactersJournals':'#journals-top';
-  $(topDiv).empty();
+  $('#thisCharactersJournals').empty();
+  $('#journals-top').empty();
   if(currentCharacter.journals){
     const journalDivs = currentCharacter.journals.forEach(entry => {
+      if(!entry._id){
+        entry._id=`${Date.now()}error`;
+        console.log("missing id");
+      }
       let quillText = new Quill(document.createElement("div"));
       let deleteEdit;
       if(owner===true){
@@ -880,9 +900,10 @@ function addJournals(owner) {
         deleteEdit = "";
       }
       quillText.setContents(entry.contents);
-      const div = `<div id="journal${entry._id}">
+      const div = `<div id="journal-${entry._id.toString()}">
+      <div>
       ${deleteEdit}
-      <div class="journal-entry">
+      <div class="row mx-auto journal-entry">
       ${quillText.root.innerHTML}
       </div>
       <div class="container messages-container">
@@ -890,9 +911,11 @@ function addJournals(owner) {
           <button type="button" class="btn btn-light comment-button">Comment</button>
         </div>
       </div>
+      </div>
       </div>`;
     $(topDiv).append(div);
   })
+  $("img").addClass('img-fluid mx-auto');
   if(owner===true){
     addJournalManagement()
   }
@@ -904,13 +927,21 @@ function addJournals(owner) {
 
 function addJournalManagement() {
   $(".deleteThisJournal").click(e => deleteJournal(e.target))
-  $(".editThisJournal").click(e => editJournal(e))
+  $(".editThisJournal").click(e => addJournalEditor(e))
 }
 
-function editJournal(e) {
-  const journalId = e.target.dataset.target;
-  // $(`#${journalId}`).
-}
+// function editJournal(e) {
+//   const journalId = e.target.dataset.target.toString();
+//   removeEditor()
+//   $(`#journal-${journalId}:first-child`).empty()
+//   const editor=`<div>
+//   <div id="editor">
+//   </div>
+//   <button id="submitNewJournalEntry" data-page="character">Submit</button>
+//   </div>`;
+//   $(`#journal-${journalId}:first-child`).append(editor);
+//   initializeEditor(e)
+// }
 
 function deleteJournal(target) {
   const journalId = target.dataset.target;
