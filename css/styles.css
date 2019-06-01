@@ -2,6 +2,10 @@
 .hidden {
   display: none; }
 
+canvas {
+  width: 100%;
+  height: auto; }
+
 .visible {
   display: block; }
 

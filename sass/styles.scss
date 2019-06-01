@@ -8,6 +8,10 @@ $primary: #cdc4b1;
   display: none;
 }
 
+canvas {
+  width: 100%;
+  height: auto;
+}
 .visible{
   display: block;
 }

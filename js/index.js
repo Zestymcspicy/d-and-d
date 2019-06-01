@@ -804,7 +804,7 @@ async function selectFile(file, type) {
 
 async function compressImage(file) {
   return new Promise(function(res, rej) {
-  const width = 512;
+  let width = 512;
   const fileName = file.name;
   const fileType = file.type;
   const reader = new FileReader();
@@ -814,18 +814,49 @@ async function compressImage(file) {
     const img = new Image();
     img.src = event.target.result;
     img.onload = () => {
+      if(img.height > img.width) {
+        width = (img.width/img.height)*512;
+      }
       const scaleFactor = width/img.width;
       canvas.width = width;
       canvas.height = img.height * scaleFactor;
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      ctx.canvas.toBlob((blob) => {
-        const newFile = new File([blob], fileName, {
-          type: fileType,
-          lastModified: Date.now()
-        });
+      const wh = Math.sqrt(canvas.width**2 + canvas.height**2)
+      const imgWidth = width;
+      const imgHeight = canvas.height;
+      const originX = (wh-width)/2
+      const originY = (wh-imgHeight)/2
+      canvas.width = wh;
+      canvas.height= wh;
+      ctx.drawImage(img, originX, originY, imgWidth, imgHeight);
+      ctx.arc(wh/2, wh/2, wh/4, 0, 0)
+      $('#editImageContainer').append(canvas);
+      $('#image-edit-modal').modal('toggle');
+      $('#rotateRight').click(function() {
+        ctx.clearRect(0, 0, wh, wh)
+        ctx.translate(canvas.width/2, canvas.height/2);
+        ctx.rotate(45 * Math.PI / 180);
+        ctx.translate(-canvas.width/2, -canvas.height/2);
+        ctx.drawImage(img, originX, originY, imgWidth, imgHeight);
+      })
+      $('#rotateLeft').click(function() {
+        ctx.clearRect(0, 0, wh, wh)
+        ctx.translate(canvas.width/2, canvas.height/2);
+        ctx.rotate(-45 * Math.PI / 180);
+        ctx.translate(-canvas.width/2, -canvas.height/2);
+        ctx.drawImage(img, originX, originY, imgWidth, imgHeight);
+      })
+      $('#imageReadyButton').click(() => {
+        $('#image-edit-modal').modal('toggle');
+        ctx.canvas.toBlob((blob) => {
+          const newFile = new File([blob], fileName, {
+            type: fileType,
+            lastModified: Date.now()
+          });
         res(newFile)
       }, fileType, 1)
+        })
       }
   }
 })
