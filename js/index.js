@@ -801,9 +801,12 @@ async function selectFile(file, type) {
     }
   })
 }
-
+//titled compress but also runs the image rotation modal
 async function compressImage(file) {
   return new Promise(function(res, rej) {
+  if($('canvas')) {
+    $('canvas').remove()
+  }
   let width = 512;
   const fileName = file.name;
   const fileType = file.type;
@@ -848,6 +851,8 @@ async function compressImage(file) {
         ctx.drawImage(img, originX, originY, imgWidth, imgHeight);
       })
       $('#imageReadyButton').click(() => {
+        $('#imageReadyButton').off('click')
+        $('canvas').remove()
         $('#image-edit-modal').modal('toggle');
         ctx.canvas.toBlob((blob) => {
           const newFile = new File([blob], fileName, {
