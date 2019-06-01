@@ -788,10 +788,7 @@ function populateIconModal(type) {
 async function selectFile(file, type) {
   console.log(file);
   return compressImage(file)
-  .then(newFile => {
-    console.log(newFile)
-    return getSignedRequest(newFile)
-  })
+  .then(newFile => getSignedRequest(newFile))
   .then(res => {
     if(type==="character"){
       updateCharacter(res, "icon");
@@ -929,18 +926,6 @@ function addJournalManagement() {
   $(".editThisJournal").click(e => addJournalEditor(e))
 }
 
-// function editJournal(e) {
-//   const journalId = e.target.dataset.target.toString();
-//   removeEditor()
-//   $(`#journal-${journalId}:first-child`).empty()
-//   const editor=`<div>
-//   <div id="editor">
-//   </div>
-//   <button id="submitNewJournalEntry" data-page="character">Submit</button>
-//   </div>`;
-//   $(`#journal-${journalId}:first-child`).append(editor);
-//   initializeEditor(e)
-// }
 
 function deleteJournal(target) {
   const journalId = target.dataset.target;
@@ -967,6 +952,10 @@ function deleteJournal(target) {
   };
 }
 
+function setForUser() {
+  assignCharacters();
+  buildCharacterManagementPage();
+}
 
 
 function initTests() {
@@ -984,8 +973,3 @@ function initTests() {
 }
 
 initTests();
-
-function setForUser() {
-  assignCharacters();
-  buildCharacterManagementPage();
-}
