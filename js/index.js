@@ -1,4 +1,4 @@
-// (function(){
+(function(){
 // const url = "http://localhost:5000";
 const url = "https://pacific-headland-65956.herokuapp.com"
 const signInAlert = $("#signInAlert");
@@ -122,9 +122,8 @@ async function getAllCharacters() {
 async function userSignIn() {
   await fetch(`${url}/users/login/`, {
     method: "POST",
-    // body: `displayName=HopsTheDog&password=ImaCuteDog`,
-    body: `displayName=LarryTheCat&password=ImaStupidCat`,
-    // body: `displayName=${displayName.value}&password=${password.value}`,
+    // body: `displayName=LarryTheCat&password=ImaStupidCat`,
+    body: `displayName=${displayName.value}&password=${password.value}`,
     headers: {
       "Content-Type": "application/x-www-form-urlencoded"
     }
@@ -413,7 +412,7 @@ function buildInputBox(target, type) {
   if ((type === "mediaComment")) {
     const postButton = buildElement("postButton", "button");
     const mediaAncestor = parentDiv.parentElement.parentElement;
-    postButton.classList.add("btn", "btn-sm", "btn-light");
+    postButton.classList.add("btn", "btn-sm", "btn-light", "mb-1");
     postButton.innerHTML = "Post";
     inputBox.append(postButton);
     parentDiv.before(inputBox);
@@ -494,7 +493,7 @@ function buildComment(commentObj) {
   }
 
   //comment template using template literal add disabled to comment button
-  let comment = `<div class="comment-box mb-1 continer-fluid d-flex">
+  let comment = `<div class="comment-box mb-1 container-fluid d-flex">
   <button class="hidePostsButton align-self-start">[-]</button>
   <div class="media pb-1" id="childOf${commentObj.childOf}">
   <img class="mr-3 avatar" src=${commentObj.icon} alt="dragon!">
@@ -600,7 +599,7 @@ function buildCharacterPage(currentCharacter){
   let journalUpdateButton = "";
   let editButton = "";
   let switchImageButton = "";
-  let summary = "Add a summary";
+  let summary = "No summary yet";
   if(currentCharacter.summary){
     summary = currentCharacter.summary;
   }
@@ -613,7 +612,7 @@ function buildCharacterPage(currentCharacter){
     switchImageButton = `<button data-char_id=${
       currentCharacter._id
     } id='chooseCharacterImageButton' data-target="#icon-modal" data-toggle="modal" class='btn btn-outline mt-0'>Choose Image</button>`;
-    journalUpdateButton = `<button id="editJournal" data-page="journalEditor">Edit Journal</button>`
+    journalUpdateButton = `<button id="editJournal" data-page="journalEditor">Edit Journals</button>`
   } else {
     editButton = "";
   }
@@ -634,6 +633,7 @@ function buildCharacterPage(currentCharacter){
   </div>
   <p id="characterSummary">${summary}</p>
   ${journalUpdateButton}
+  <h1 class="title">Journals</h1>
   <div id="journals-top"></div>
   </div>`;
   $("#characterPageJumbo").append(charInfo);
@@ -932,8 +932,8 @@ function addJournals(owner) {
       let deleteEdit;
       if(owner===true){
         deleteEdit = `<div class="mt-1 button-group">
-        <button id="${entry._id}edit" data-target=${entry._id} type="button" class="btn btn-warning editThisJournal">Edit</button>
-        <button id="${entry._id}delete" data-target=${entry._id} type="button" class="btn btn-danger deleteThisJournal">Delete</button>
+        <button id="${entry._id}edit" data-target=${entry._id} type="button" class="btn btn-warning m-1 editThisJournal">Edit</button>
+        <button id="${entry._id}delete" data-target=${entry._id} type="button" class="btn btn-danger m-1 deleteThisJournal">Delete</button>
         </div>`;
       } else {
         deleteEdit = "";
@@ -1003,12 +1003,12 @@ function setForUser() {
 
 function initTests() {
   Promise.all([
-    userSignIn(),
+    // userSignIn(),
     getComments(),
     getAllCharacters()])
   .then((res) => {
-    assignCharacters();
-    buildCharacterManagementPage();
+    // assignCharacters();
+    // buildCharacterManagementPage();
     buildAllCharactersPage(allCharacters);
     initCommentClicks();
   }).catch(err => console.log(err))
@@ -1016,4 +1016,4 @@ function initTests() {
 }
 
 initTests();
-// })()
+})()
