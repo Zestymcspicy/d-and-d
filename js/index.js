@@ -1,3 +1,4 @@
+// (function(){
 // const url = "http://localhost:5000";
 const url = "https://pacific-headland-65956.herokuapp.com"
 const signInAlert = $("#signInAlert");
@@ -681,6 +682,7 @@ function initializeEditor(e) {
     $("#hidden-file-input").trigger("click");
     const fileInput = document.getElementById("hidden-file-input");
     fileInput.addEventListener("change", function(e) {
+      e.stopImmediatePropagation()
       const file = e.target.files[0];
       selectFile(file, "journal")
       .then(res => {
@@ -803,15 +805,18 @@ async function selectFile(file, type) {
 }
 //titled compress but also runs the image rotation modal
 async function compressImage(file) {
+  $('#editImageContainer').empty();
   return new Promise(function(res, rej) {
-  if($('canvas')) {
-    $('canvas').remove()
-  }
   let width = 512;
   const fileName = file.name;
   const fileType = file.type;
   const reader = new FileReader();
-  const canvas = document.createElement('canvas');
+  let canvas;
+  if(document.querySelector('canvas')) {
+    canvas = document.querySelector('canvas')
+  } else {
+    canvas = document.createElement('canvas');
+  }
   reader.readAsDataURL(file);
   reader.onload = event => {
     const img = new Image();
@@ -821,21 +826,20 @@ async function compressImage(file) {
         width = (img.width/img.height)*512;
       }
       const scaleFactor = width/img.width;
-      canvas.width = width;
-      canvas.height = img.height * scaleFactor;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      const wh = Math.sqrt(canvas.width**2 + canvas.height**2)
+      // canvas.width = width;
       const imgWidth = width;
-      const imgHeight = canvas.height;
-      const originX = (wh-width)/2
-      const originY = (wh-imgHeight)/2
+      const imgHeight = img.height * scaleFactor;
+      var ctx = canvas.getContext('2d');
+      // ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      const wh = Math.sqrt(imgWidth**2 + imgHeight**2)
+      const originX = (wh-width)/2;
+      const originY = (wh-imgHeight)/2;
       canvas.width = wh;
       canvas.height= wh;
       ctx.drawImage(img, originX, originY, imgWidth, imgHeight);
-      ctx.arc(wh/2, wh/2, wh/4, 0, 0)
+      ctx.arc(wh/2, wh/2, wh/4, 0, 0);
       $('#editImageContainer').append(canvas);
-      $('#image-edit-modal').modal('toggle');
+      $('#image-edit-modal').modal('show');
       $('#rotateRight').click(function() {
         ctx.clearRect(0, 0, wh, wh)
         ctx.translate(canvas.width/2, canvas.height/2);
@@ -851,9 +855,9 @@ async function compressImage(file) {
         ctx.drawImage(img, originX, originY, imgWidth, imgHeight);
       })
       $('#imageReadyButton').click(() => {
+        $('#editImageContainer').empty()
         $('#imageReadyButton').off('click')
-        $('canvas').remove()
-        $('#image-edit-modal').modal('toggle');
+        $('#image-edit-modal').modal('hide');
         ctx.canvas.toBlob((blob) => {
           const newFile = new File([blob], fileName, {
             type: fileType,
@@ -866,6 +870,9 @@ async function compressImage(file) {
   }
 })
 }
+
+// $('#image-edit-modal').on('show.bs.modal', ()=>$('#imageCanvas').remove())
+$('#image-edit-modal').on('hide.bs.modal', ()=>$('#editImageContainer').empty())
 
 function updateUserAvatar(iconUrl){
     fetch(`${url}/users/${user._id}/image`, {
@@ -1009,3 +1016,4 @@ function initTests() {
 }
 
 initTests();
+// })()
