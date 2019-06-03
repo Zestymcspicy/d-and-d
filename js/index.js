@@ -922,7 +922,7 @@ function addJournals(owner) {
   let topDiv = owner ? '#thisCharactersJournals':'#journals-top';
   $('#thisCharactersJournals').empty();
   $('#journals-top').empty();
-  if(currentCharacter.journals){
+  if(currentCharacter.journals.length>0){
     const journalDivs = currentCharacter.journals.forEach(entry => {
       if(!entry._id){
         entry._id=`${Date.now()}error`;
