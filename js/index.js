@@ -50,18 +50,7 @@
     "woodSword"
   ];
 
-  // function initCommentCollapsers() {
-  //   $(".hidePostsButton").click(function(e) {
-  //     e.stopImmediatePropagation();
-  //     if (e.target.innerHTML === "[-]") {
-  //       e.target.innerHTML = "[+]";
-  //       e.target.nextElementSibling.classList.add("hidden");
-  //     } else {
-  //       e.target.innerHTML = "[-]";
-  //       e.target.nextElementSibling.classList.remove("hidden");
-  //     }
-  //   });
-  // }
+
 
   const hideCommentOverflow = () => {
     const windowWidth = window.innerWidth;
@@ -70,14 +59,17 @@
       const width = $(this).width()
 
       if(offset.left + width > windowWidth*.95) {
-          const target = $(this).child(".hidePostsButton")
-          console.log(target)
+          const target = $(this).children(".hidePostsButton")
+          target.each(function() {
+            this.innerHTML = '[+]';
+            this.nextElementSibling.classList.add("hidden");
+          })
       }
     });
   }
 
 
-  
+
   const imgError = image => {
     image.onerror ="";
     image.src = "images/baseDragon.png";
