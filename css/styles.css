@@ -15,8 +15,8 @@ canvas {
   border: none; }
 
 .icon-select-image {
-  max-width: 100px;
-  max-height: 100px; }
+  max-width: 90px;
+  max-height: 90px; }
   .icon-select-image:hover {
     cursor: pointer;
     background-color: #3c404a; }
@@ -47,14 +47,12 @@ body {
   margin-left: 20px; }
 
 .avatar {
-  height: 40px;
-  width: 40px; }
+  height: 48px;
+  width: 48px; }
 
-.comment-box {
-  padding-bottom: 1%; }
-  .comment-box:nth-of-type(n+2) {
-    position: relative;
-    left: -1rem; }
+.comment-box:nth-of-type(n+2) {
+  position: relative;
+  left: -1rem; }
 
 #addCharacter {
   display: none; }
