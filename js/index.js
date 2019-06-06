@@ -57,18 +57,22 @@
     $('.comment-content').each(function() {
       const offset = $(this).offset()
       const width = $(this).width()
-      const buttonsBox = $(this).next()
+      const buttonsBox = $(this).next().children(".btn-group")
       const buttonsBoxWidth = buttonsBox.width()
       const buttonsBoxOffset = buttonsBox.offset()
       const buttonsBoxEdge = buttonsBoxOffset.left + buttonsBoxWidth
       const contentEdge = offset.left + width
       const edge = buttonsBoxEdge > contentEdge ? buttonsBoxEdge : contentEdge;
+      const target = $(this).closest(".media").prev()
       if(edge > windowWidth*.95) {
-          const target = $(this).closest(".media").prev()
-          console.log(target);
           target.each(function() {
             this.innerHTML = '[+]';
             this.nextElementSibling.classList.add("hidden");
+          })
+      }else if(edge < windowWidth*.95) {
+          target.each(function() {
+            this.innerHTML = '[-]';
+            this.nextElementSibling.classList.remove("hidden");
           })
       }
     });
@@ -537,7 +541,7 @@
     <div class="media-body" id=${commentObj._id}>
       <h6 class="mt-0 mb-1">${commentObj.displayName}</h6>
       <p class="mb-1 comment-content">${commentObj.content}</p>
-      <div class="d-inline-block">
+      <div>
       <span id="${commentObj._id}-score" class="comment-score">${
       commentObj.votes.score
     }</span>

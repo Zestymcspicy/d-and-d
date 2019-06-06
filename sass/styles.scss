@@ -12,13 +12,10 @@ canvas {
   width: 100%;
   height: auto;
 }
+
 .visible{
   display: block;
 }
-
-// .journal-entry{
-//   margin: 0 auto;
-// }
 
 .hidePostsButton {
   font-size: 14px;
@@ -93,6 +90,7 @@ body {
 #allCharactersPage{
   color: $myGrey;
 }
+
 .character-image{
   max-height: 200px;
   max-width: 200px;
@@ -116,6 +114,7 @@ body {
 .avatar-char-name{
   width: 100%;
 }
+
 .comment-button, .aye-button, .nay-button {
   padding: 0 2px;
   font-size: 12px;
