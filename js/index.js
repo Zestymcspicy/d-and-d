@@ -54,12 +54,18 @@
 
   const hideCommentOverflow = () => {
     const windowWidth = window.innerWidth;
-    $('.comment-box').each(function() {
+    $('.comment-content').each(function() {
       const offset = $(this).offset()
       const width = $(this).width()
-
-      if(offset.left + width > windowWidth*.95) {
-          const target = $(this).children(".hidePostsButton")
+      const buttonsBox = $(this).next()
+      const buttonsBoxWidth = buttonsBox.width()
+      const buttonsBoxOffset = buttonsBox.offset()
+      const buttonsBoxEdge = buttonsBoxOffset.left + buttonsBoxWidth
+      const contentEdge = offset.left + width
+      const edge = buttonsBoxEdge > contentEdge ? buttonsBoxEdge : contentEdge;
+      if(edge > windowWidth*.95) {
+          const target = $(this).closest(".media").prev()
+          console.log(target);
           target.each(function() {
             this.innerHTML = '[+]';
             this.nextElementSibling.classList.add("hidden");
@@ -68,7 +74,7 @@
     });
   }
 
-
+  window.onresize = hideCommentOverflow;
 
   const imgError = image => {
     image.onerror ="";
@@ -443,7 +449,7 @@
     if (type === "mediaComment") {
       const postButton = buildElement("postButton", "button");
       const mediaAncestor = parentDiv.parentElement.parentElement;
-      postButton.classList.add("btn", "btn-sm", "btn-light", "mb-1");
+      postButton.classList.add("btn", "shadow", "btn-sm", "btn-light", "mb-1");
       postButton.innerHTML = "Post";
       inputBox.append(postButton);
       parentDiv.before(inputBox);
@@ -454,7 +460,7 @@
     }
     if (type === "characterSummary") {
       const updateSummaryButton = buildElement("updateSummaryButton", "button");
-      updateSummaryButton.classList.add("btn", "mt-1", "btn-sm", "btn-light");
+      updateSummaryButton.classList.add("btn", "shadow", "mt-1", "btn-sm", "btn-light");
       updateSummaryButton.innerHTML = "Update";
       inputBox.append(updateSummaryButton);
       const presentSummary = $("#characterSummary").text();
@@ -530,19 +536,19 @@
   <img class="mr-3 avatar" src=${commentObj.icon} onerror="imgError(this)" alt="dragon!">
     <div class="media-body" id=${commentObj._id}>
       <h6 class="mt-0 mb-1">${commentObj.displayName}</h6>
-      <p class="mb-1">${commentObj.content}</p>
-      <div>
+      <p class="mb-1 comment-content">${commentObj.content}</p>
+      <div class="d-inline-block">
       <span id="${commentObj._id}-score" class="comment-score">${
       commentObj.votes.score
     }</span>
         <div class="btn-group comment-vote-buttons" role="group" disabled>
-          <button type="button" class="btn-light btn btn-sm mr-1 comment-button">Comment</button>
+          <button type="button" class="btn-light btn shadow btn-sm mr-1 comment-button">Comment</button>
           <button type="button" id="${commentObj._id}-aye" data-forComment=${
       commentObj._id
-    } class="btn-light btn btn-sm mr-1 aye-button">Aye!</button>
+    } class="btn-light btn shadow btn-sm mr-1 aye-button">Aye!</button>
           <button type="button" id="${commentObj._id}-nay" data-forComment=${
       commentObj._id
-    } class="btn-light btn btn-sm nay-button">Nay!</button>
+    } class="btn-light btn shadow btn-sm nay-button">Nay!</button>
         </div>
       </div>
     </div>
@@ -583,12 +589,12 @@
       $("#characterManagementIconColumn").remove();
     }
     $("#characterPageHeader").before(
-      `<div id="characterManagementIconColumn" class="col-3"><button data-target="#icon-modal" data-toggle="modal" class="btn btn-outline mt-0">Choose Avatar</button><img id="user-icon" class="img-fluid mb-2" src=${
+      `<div id="characterManagementIconColumn" class="col-3"><button data-target="#icon-modal" data-toggle="modal" class="btn shadow btn-outline mt-0">Choose Avatar</button><img id="user-icon" class="img-fluid mb-2" src=${
         user.icon
       } alt="user-icon"/></div>`
     );
     $("#characterList")
-      .children()
+  .children()
       .remove();
     populateIconModal("user");
     $("#addCharacterButton").removeAttr("disabled");
@@ -650,11 +656,11 @@
     ) {
       editButton = `<button data-char_id=${
         currentCharacter._id
-      } id='editCharacterSummaryButton'class='btn mt-0'>Edit</button>`;
+      } id='editCharacterSummaryButton'class='btn shadow mt-0'>Edit</button>`;
       switchImageButton = `<button data-char_id=${
         currentCharacter._id
-      } id='chooseCharacterImageButton' data-target="#icon-modal" data-toggle="modal" class='btn btn-outline mt-0'>Choose Image</button>`;
-      journalUpdateButton = `<button id="editJournal" data-page="journalEditor">Edit Journals</button>`;
+      } id='chooseCharacterImageButton' data-target="#icon-modal" data-toggle="modal" class='btn shadow btn-outline mt-0'>Choose Image</button>`;
+      journalUpdateButton = `<button id="editJournal" class="btn btn-primary shadow" data-page="journalEditor">Edit Journals</button>`;
     } else {
       editButton = "";
     }
@@ -810,7 +816,7 @@
       .remove();
     iconsArray.forEach(x => {
       const iconButton = buildElement(x, "button");
-      iconButton.classList.add("btn", "icon-button");
+      iconButton.classList.add("btn", "shadow", "icon-button");
       iconButton.innerHTML = `<img data-target="#icon-modal" data-toggle="modal" class='icon-select-image' src='images/${x}.png'>`;
       $("#iconsBox").append(iconButton);
       iconButton.addEventListener("click", () => {
@@ -823,7 +829,7 @@
       });
     });
     $("#iconsBox")
-      .append(`<form enctype="multipart/form-data" class='btn icon-button d-flex'><label for="avatar">Choose your own</label>
+      .append(`<form enctype="multipart/form-data" class='btn shadow icon-button d-flex'><label for="avatar">Choose your own</label>
     <input class="mb-1" type="file" id="icon-file-pick" name="avatar" accept="image/png, image/jpeg"></form>`);
     const fileInput = document.getElementById("icon-file-pick");
     fileInput.addEventListener(
@@ -990,10 +996,10 @@
           deleteEdit = `<div class="mt-1 button-group">
         <button id="${entry._id}edit" data-target=${
             entry._id
-          } type="button" class="btn btn-warning m-1 editThisJournal">Edit</button>
+          } type="button" class="btn shadow btn-warning m-1 editThisJournal">Edit</button>
         <button id="${entry._id}delete" data-target=${
             entry._id
-          } type="button" class="btn btn-danger m-1 deleteThisJournal">Delete</button>
+          } type="button" class="btn shadow btn-danger m-1 deleteThisJournal">Delete</button>
         </div>`;
         } else {
           deleteEdit = "";
@@ -1007,7 +1013,7 @@
       </div>
       <div class="container messages-container">
         <div data-thread_id=${entry._id} id="topCommentLine">
-          <button type="button" class="btn btn-light comment-button">Comment</button>
+          <button type="button" class="btn shadow btn-light comment-button">Comment</button>
         </div>
       </div>
       </div>
