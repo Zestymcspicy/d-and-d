@@ -54,12 +54,12 @@ canvas {
 
 body {
   font-family: Almendra, cursive;
-  color: $primary;
   background-color: $primary;
   #sign-in-modal, #icon-modal{
     color:$myGrey;
   }
   .main-content {
+    color: $primary;
     background-color: $myGrey;
   }
 }
@@ -123,4 +123,10 @@ body {
 #characterManagementPageJumbo, #characterPageJumbo{
   background-color: $primary;
   color: $myGrey;
+}
+
+@media (max-width: 576px){
+  body{
+    background-color: $myGrey;
+  }
 }

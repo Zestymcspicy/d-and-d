@@ -36,11 +36,11 @@ canvas {
 
 body {
   font-family: Almendra, cursive;
-  color: #cdc4b1;
   background-color: #cdc4b1; }
   body #sign-in-modal, body #icon-modal {
     color: #3c404a; }
   body .main-content {
+    color: #cdc4b1;
     background-color: #3c404a; }
 
 .comment-vote-buttons {
@@ -86,3 +86,7 @@ body {
 #characterManagementPageJumbo, #characterPageJumbo {
   background-color: #cdc4b1;
   color: #3c404a; }
+
+@media (max-width: 576px) {
+  body {
+    background-color: #3c404a; } }
