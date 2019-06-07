@@ -446,7 +446,7 @@
     const inputBox = buildElement("inputBox", "div");
     const textInput = buildElement("textInput", "textarea");
     const parentDiv = target.parentElement;
-    inputBox.classList.add("container");
+    inputBox.classList.add("container", "d-flex");
     textInput.setAttribute("cols", "40");
     textInput.setAttribute("rows", "4");
     inputBox.append(textInput);
@@ -534,7 +534,7 @@
         commentObj.icon = "images/baseDragon.png";
     }
     //comment template using template literal
-    let comment = `<div class="comment-box px-0 mb-1 pb-1 container-fluid d-flex">
+    let comment = `<div class="comment-box px-0 my-2 pb-1 container-fluid d-flex">
   <button class="hidePostsButton align-self-start">[-]</button>
   <div class="media pb-1" id="childOf${commentObj.childOf}">
   <img class="mr-3 avatar" src=${commentObj.icon} onerror="imgError(this)" alt="dragon!">
@@ -593,7 +593,7 @@
       $("#characterManagementIconColumn").remove();
     }
     $("#characterPageHeader").before(
-      `<div id="characterManagementIconColumn" class="col-3"><button data-target="#icon-modal" data-toggle="modal" class="btn shadow btn-outline mt-0">Choose Avatar</button><img id="user-icon" class="img-fluid mb-2" src=${
+      `<div id="characterManagementIconColumn" class="col-3"><button data-target="#icon-modal" data-toggle="modal" class="btn btn-primary shadow btn-outline mb-2 mt-0">Choose Avatar</button><img id="user-icon" class="img-fluid mb-2" src=${
         user.icon
       } alt="user-icon"/></div>`
     );
@@ -660,11 +660,11 @@
     ) {
       editButton = `<button data-char_id=${
         currentCharacter._id
-      } id='editCharacterSummaryButton'class='btn shadow mt-0'>Edit</button>`;
+      } id='editCharacterSummaryButton'class='btn btn-primary shadow mb-4 ml-3 mt-0'>Edit Summary</button>`;
       switchImageButton = `<button data-char_id=${
         currentCharacter._id
-      } id='chooseCharacterImageButton' data-target="#icon-modal" data-toggle="modal" class='btn shadow btn-outline mt-0'>Choose Image</button>`;
-      journalUpdateButton = `<button id="editJournal" class="btn btn-primary shadow" data-page="journalEditor">Edit Journals</button>`;
+      } id='chooseCharacterImageButton' data-target="#icon-modal" data-toggle="modal" class='btn btn-primary shadow btn-outline mt-0'>Choose Image</button>`;
+      journalUpdateButton = `<button id="editJournal" class="btn mt-2 btn-primary shadow" data-page="journalEditor">Edit Journals</button>`;
     } else {
       editButton = "";
     }
@@ -774,6 +774,7 @@
     if (fileURL) {
       quill.insertEmbed(range.index, "image", fileURL, Quill.sources.USER);
     }
+    $('img').addClass('img-fluid mx-auto')
   }
 
   function buildAllCharactersPage(characters) {
@@ -811,6 +812,14 @@
   function addEditListener() {
     $("#editCharacterSummaryButton").click(e => {
       buildInputBox(e.target, "characterSummary");
+      $("#editCharacterSummary").off("click")
+      $("#editCharacterSummaryButton").click(e => {
+        e.stopImmediatePropagation()
+        console.log("clicked")
+        document.querySelector("#inputBox").remove()
+        $("#editCharacterSummary").off("click")
+        addEditListener()
+      })
     });
   }
 
@@ -820,7 +829,7 @@
       .remove();
     iconsArray.forEach(x => {
       const iconButton = buildElement(x, "button");
-      iconButton.classList.add("btn", "shadow", "icon-button");
+      iconButton.classList.add("btn", "icon-button");
       iconButton.innerHTML = `<img data-target="#icon-modal" data-toggle="modal" class='icon-select-image' src='images/${x}.png'>`;
       $("#iconsBox").append(iconButton);
       iconButton.addEventListener("click", () => {
@@ -833,7 +842,7 @@
       });
     });
     $("#iconsBox")
-      .append(`<form enctype="multipart/form-data" class='btn shadow icon-button d-flex'><label for="avatar">Choose your own</label>
+      .append(`<form enctype="multipart/form-data" class='btn icon-button d-flex'><label for="avatar">Choose your own</label>
     <input class="mb-1" type="file" id="icon-file-pick" name="avatar" accept="image/png, image/jpeg"></form>`);
     const fileInput = document.getElementById("icon-file-pick");
     fileInput.addEventListener(
@@ -886,11 +895,9 @@
             width = (img.width / img.height) * 512;
           }
           const scaleFactor = width / img.width;
-          // canvas.width = width;
           const imgWidth = width;
           const imgHeight = img.height * scaleFactor;
           var ctx = canvas.getContext("2d");
-          // ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
           const wh = Math.sqrt(imgWidth ** 2 + imgHeight ** 2);
           const originX = (wh - width) / 2;
           const originY = (wh - imgHeight) / 2;
@@ -900,12 +907,15 @@
           ctx.arc(wh / 2, wh / 2, wh / 4, 0, 0);
           $("#editImageContainer").append(canvas);
           $("#image-edit-modal").modal("show");
+          let rotation = 0;
           $("#rotateRight").click(function() {
             ctx.clearRect(0, 0, wh, wh);
             ctx.translate(canvas.width / 2, canvas.height / 2);
             ctx.rotate((45 * Math.PI) / 180);
             ctx.translate(-canvas.width / 2, -canvas.height / 2);
             ctx.drawImage(img, originX, originY, imgWidth, imgHeight);
+            rotation+=45;
+            rotation===360?rotation=0:console.log(rotation)
           });
           $("#rotateLeft").click(function() {
             ctx.clearRect(0, 0, wh, wh);
@@ -913,6 +923,8 @@
             ctx.rotate((-45 * Math.PI) / 180);
             ctx.translate(-canvas.width / 2, -canvas.height / 2);
             ctx.drawImage(img, originX, originY, imgWidth, imgHeight);
+            rotation-=45;
+            rotation===-360?rotation=0:console.log(rotation)            
           });
           $("#imageReadyButton").click(() => {
             $("#editImageContainer").empty();
