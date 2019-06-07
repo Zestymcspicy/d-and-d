@@ -15,8 +15,8 @@ canvas {
   border: none; }
 
 .icon-select-image {
-  max-width: 90px;
-  max-height: 90px; }
+  max-width: 80px;
+  max-height: 80px; }
   .icon-select-image:hover {
     cursor: pointer;
     background-color: #3c404a; }

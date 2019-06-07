@@ -4,6 +4,7 @@ $myGrey: #3c404a;
 $myGreydient: linear-gradient($myGrey, #474747);
 $primary: #cdc4b1;
 
+
 .hidden{
   display: none;
 }
@@ -24,8 +25,8 @@ canvas {
 }
 
 .icon-select-image {
-  max-width: 90px;
-  max-height: 90px;
+  max-width: 80px;
+  max-height: 80px;
   &:hover {
     cursor: pointer;
     background-color: $myGrey;

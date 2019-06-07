@@ -908,25 +908,34 @@
           $("#editImageContainer").append(canvas);
           $("#image-edit-modal").modal("show");
           let rotation = 0;
-          $("#rotateRight").click(function() {
-            ctx.clearRect(0, 0, wh, wh);
-            ctx.translate(canvas.width / 2, canvas.height / 2);
-            ctx.rotate((45 * Math.PI) / 180);
-            ctx.translate(-canvas.width / 2, -canvas.height / 2);
-            ctx.drawImage(img, originX, originY, imgWidth, imgHeight);
+          $("#rotateRight").click(function(e) {
+            e.stopImmediatePropagation()
             rotation+=45;
-            rotation===360?rotation=0:console.log(rotation)
+            if(rotation>360){
+              rotation=0;
+            }
+            rotateImage(45)
           });
-          $("#rotateLeft").click(function() {
-            ctx.clearRect(0, 0, wh, wh);
-            ctx.translate(canvas.width / 2, canvas.height / 2);
-            ctx.rotate((-45 * Math.PI) / 180);
-            ctx.translate(-canvas.width / 2, -canvas.height / 2);
-            ctx.drawImage(img, originX, originY, imgWidth, imgHeight);
+          $("#rotateLeft").click(function(e) {
+            e.stopImmediatePropagation()
             rotation-=45;
-            rotation===-360?rotation=0:console.log(rotation)            
+            if(rotation<-360){
+              rotation=0;
+            }
+            rotateImage(-45);
           });
+
+            function rotateImage(x) {
+              ctx.clearRect(0, 0, wh, wh);
+              ctx.translate(canvas.width / 2, canvas.height / 2);
+              ctx.rotate((x * Math.PI) / 180);
+              ctx.translate(-canvas.width / 2, -canvas.height / 2);
+              ctx.drawImage(img, originX, originY, imgWidth, imgHeight);
+              trimImage(ctx, canvas, rotation)
+            }
+
           $("#imageReadyButton").click(() => {
+            trimImage(ctx, canvas, rotation)
             $("#editImageContainer").empty();
             $("#imageReadyButton").off("click");
             $("#image-edit-modal").modal("hide");
@@ -947,7 +956,26 @@
     });
   }
 
-  // $('#image-edit-modal').on('show.bs.modal', ()=>$('#imageCanvas').remove())
+function trimImage(ctx, canvas, rotation){
+  switch(rotation) {
+    case 45:
+    case-135:
+
+    console.log(rotation)
+    break;
+    case 90:
+    case -90:
+    console.log(rotation)
+    break;
+    case 135:
+    case -45:
+    console.log(rotation)
+    break;
+    default:
+    console.log("Monkey!")
+  }
+}
+
   $("#image-edit-modal").on("hide.bs.modal", () =>
     $("#editImageContainer").empty()
   );
