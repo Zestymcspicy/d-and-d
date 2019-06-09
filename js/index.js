@@ -904,42 +904,49 @@
           canvas.width = wh;
           canvas.height = wh;
           ctx.drawImage(img, originX, originY, imgWidth, imgHeight);
-          ctx.arc(wh / 2, wh / 2, wh / 4, 0, 0);
           $("#editImageContainer").append(canvas);
           $("#image-edit-modal").modal("show");
           let rotation = 0;
           $("#rotateRight").click(function(e) {
             e.stopImmediatePropagation()
             rotation+=45;
-            if(rotation>360){
-              rotation=0;
+            if(rotation===180){
+              rotation = 0;
             }
             rotateImage(45)
           });
           $("#rotateLeft").click(function(e) {
             e.stopImmediatePropagation()
             rotation-=45;
-            if(rotation<-360){
-              rotation=0;
+            if(rotation===-180){
+              rotation = 0;
             }
             rotateImage(-45);
           });
 
             function rotateImage(x) {
               ctx.clearRect(0, 0, wh, wh);
+              ctx.fillStyle = 'transparent'
+              ctx.fillRect(0, 0, wh, wh);
               ctx.translate(canvas.width / 2, canvas.height / 2);
               ctx.rotate((x * Math.PI) / 180);
               ctx.translate(-canvas.width / 2, -canvas.height / 2);
               ctx.drawImage(img, originX, originY, imgWidth, imgHeight);
-              trimImage(ctx, canvas, rotation)
+              if(rotation === 0 || rotation === 90){
+                trimImage(ctx, canvas, rotation, wh, imgWidth, imgHeight)
+              }
+
             }
 
           $("#imageReadyButton").click(() => {
-            trimImage(ctx, canvas, rotation)
+            let canvasToBlob = ctx.canvas;
+            if(rotation === 0 || rotation === 90){
+              canvasToBlob = trimImage(ctx, canvas, rotation, wh, imgWidth, imgHeight)
+            }
             $("#editImageContainer").empty();
             $("#imageReadyButton").off("click");
             $("#image-edit-modal").modal("hide");
-            ctx.canvas.toBlob(
+            canvasToBlob.toBlob(
               blob => {
                 const newFile = new File([blob], fileName, {
                   type: fileType,
@@ -956,25 +963,26 @@
     });
   }
 
-function trimImage(ctx, canvas, rotation){
-  switch(rotation) {
-    case 45:
-    case-135:
-
-    console.log(rotation)
-    break;
-    case 90:
-    case -90:
-    console.log(rotation)
-    break;
-    case 135:
-    case -45:
-    console.log(rotation)
-    break;
-    default:
-    console.log("Monkey!")
+  function trimImage(ctx, canvas, rotation, wh, imgWidth, imgHeight){
+    const copy = document.createElement('canvas').getContext('2d');
+    if(rotation === 90) {
+      const topY = (wh-imgWidth)/2
+      const topX = (wh-imgHeight)/2
+      copy.canvas.width = imgHeight;
+      copy.canvas.height = imgWidth;
+      const trimmed = ctx.getImageData(topX, topY, imgHeight, imgWidth)
+      copy.putImageData(trimmed, 0, 0)
+      return copy.canvas;
+    } else {
+      const topY = (wh-imgHeight)/2
+      const topX = (wh-imgWidth)/2
+      copy.canvas.width = imgWidth;
+      copy.canvas.height = imgHeight;
+      const trimmed = ctx.getImageData(topX, topY, imgHeight, imgWidth)
+      copy.putImageData(trimmed, 0, 0)
+      return copy.canvas;
+    }
   }
-}
 
   $("#image-edit-modal").on("hide.bs.modal", () =>
     $("#editImageContainer").empty()
