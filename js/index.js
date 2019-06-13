@@ -52,7 +52,7 @@
   ];
 
   const getUserIconObj = () => {
-    fetch(`${url}/users/user_icon_object/`)
+    return fetch(`${url}/users/user_icon_object/`)
     .then(res => res.json())
     .then(data => {
       console.log(data)
@@ -159,18 +159,19 @@
     }
   }
 
-  async function getAllCharacters() {
-    await fetch(`${url}/characters/get`)
+  function getAllCharacters() {
+    return fetch(`${url}/characters/get`)
       .then(res => res.json())
       .then(data => {
         allCharacters = data.body
         allCharacters.forEach( x => userIconObj[x.name] = x.icon)
+        return allCharacters
       })
       .catch(err => console.log(err));
   }
 
-  async function userSignIn() {
-    await fetch(`${url}/users/login/`, {
+  function userSignIn() {
+    return fetch(`${url}/users/login/`, {
       method: "POST",
       // body: `displayName=LarryTheCat&password=ImaStupidCat`,
       body: `displayName=${displayName.value}&password=${password.value}`,
@@ -199,8 +200,8 @@
       });
   }
 
-  async function addUser() {
-    await fetch(`${url}/users/create/`, {
+  function addUser() {
+    return fetch(`${url}/users/create/`, {
       method: "POST",
       body: `displayName=${displayName.value}&password=${
         password.value
@@ -246,7 +247,7 @@
     const level = document.getElementById("levelInput");
     const charClass = document.getElementById("classInput");
     const race = document.getElementById("raceInput");
-    fetch(`${url}/characters/create/`, {
+    return fetch(`${url}/characters/create/`, {
       method: "POST",
       body: `name=${name.value}&level=${level.value}&class=${
         charClass.value
@@ -269,7 +270,7 @@
       .catch(err => console.log(err));
   }
 
-  async function getSignedRequest(file) {
+  function getSignedRequest(file) {
     return fetch(`${url}/sign-s3?file-name=${file.name}&file-type=${file.type}`)
       .then(res => {
         console.log(res);
@@ -279,7 +280,7 @@
       .catch(err => console.log(err));
   }
 
-  async function uploadImage(file, signedRequest, iconUrl) {
+  function uploadImage(file, signedRequest, iconUrl) {
     return fetch(signedRequest, {
       method: "PUT",
       body: file
@@ -400,7 +401,7 @@
 
   function sendVotes(comment) {
     const votes = JSON.stringify(comment.votes);
-    fetch(`${url}/comments/${comment._id}`, {
+    return fetch(`${url}/comments/${comment._id}`, {
       method: "PATCH",
       body: `votes=${votes}`,
       headers: {
@@ -496,7 +497,7 @@
       childOf: parentDiv.id,
       icon: postAuthObj.icon
     };
-    fetch(`${url}/comments/add/`, {
+    return fetch(`${url}/comments/add/`, {
       method: "POST",
       body: `auth_id=${postAuthObj.auth_id}&displayName=${
         postAuthObj.name
@@ -514,10 +515,12 @@
   }
 
   function getComments() {
-     fetch(`${url}/comments/get`)
+     return fetch(`${url}/comments/get`)
       .then(res => res.json())
       .then(data => {
+        console.log(data)
         allComments = data;
+        return data;
         // constructComments(allComments);
       })
       .catch(err => console.log(err));
@@ -675,7 +678,7 @@
     ) {
       editButton = `<button data-char_id=${
         currentCharacter._id
-      } id='editCharacterSummaryButton'class='btn btn-primary shadow mb-4 ml-3 mt-0'>Edit Summary</button>`;
+      } id='editCharacterSummaryButton'class='btn btn-primary shadow mb-4 ml-3 mt-1'>Edit Summary</button>`;
       switchImageButton = `<button data-char_id=${
         currentCharacter._id
       } id='chooseCharacterImageButton' data-target="#icon-modal" data-toggle="modal" class='btn btn-primary shadow btn-outline mt-0'>Choose Image</button>`;
@@ -1003,7 +1006,7 @@
   );
 
   function updateUserAvatar(iconUrl) {
-    fetch(`${url}/users/${user._id}/image`, {
+    return fetch(`${url}/users/${user._id}/image`, {
       method: "POST",
       body: `icon=${iconUrl}`,
       headers: {
@@ -1019,7 +1022,7 @@
   }
 
   function updateCharacter(content, type) {
-    fetch(`${url}/characters/${currentCharacter._id}/update`, {
+    return fetch(`${url}/characters/${currentCharacter._id}/update`, {
       method: "PUT",
       body: `type=${type}&content=${content}`,
       headers: {
@@ -1142,6 +1145,7 @@
       getComments()
     ])
       .then(res => {
+        console.log(res)
         // assignCharacters();
         // buildCharacterManagementPage();
         buildAllCharactersPage(allCharacters);
