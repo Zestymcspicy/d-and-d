@@ -1,6 +1,6 @@
 // (function() {
-  // const url = "http://localhost:5000";
-  const url = "https://pacific-headland-65956.herokuapp.com";
+  const url = "http://localhost:5000";
+  // const url = "https://pacific-headland-65956.herokuapp.com";
   const signInAlert = $("#signInAlert");
   const charForm = document.forms["charForm"];
   const userForm = document.forms["userForm"];
@@ -11,6 +11,7 @@
   const email = document.getElementById("inputEmail");
   const passwordMatch = $("#inputPasswordMatch")[0];
   const signInButton = $("#sign-in-button");
+  let userIconObj = {};
   let allComments;
   let quill;
   let isNewUser = false;
@@ -50,7 +51,15 @@
     "woodSword"
   ];
 
-
+  const getUserIconObj = () => {
+    fetch(`${url}/users/user_icon_object/`)
+    .then(res => res.json())
+    .then(data => {
+      console.log(data)
+      userIconObj = data.body
+    })
+    .catch(err => console.log(err))
+  }
 
   const hideCommentOverflow = () => {
     const windowWidth = window.innerWidth;
@@ -153,7 +162,10 @@
   async function getAllCharacters() {
     await fetch(`${url}/characters/get`)
       .then(res => res.json())
-      .then(data => (allCharacters = data.body))
+      .then(data => {
+        allCharacters = data.body
+        allCharacters.forEach( x => userIconObj[x.name] = x.icon)
+      })
       .catch(err => console.log(err));
   }
 
@@ -502,11 +514,11 @@
   }
 
   function getComments() {
-    fetch(`${url}/comments/get`)
+     fetch(`${url}/comments/get`)
       .then(res => res.json())
       .then(data => {
         allComments = data;
-        constructComments(allComments);
+        // constructComments(allComments);
       })
       .catch(err => console.log(err));
   }
@@ -529,15 +541,18 @@
         score: 0
       };
     }
-
-    if (!commentObj.icon) {
-        commentObj.icon = "images/baseDragon.png";
+      icon = userIconObj[commentObj.displayName]
+    if(icon == undefined){
+          commentObj.icon = "images/baseDragon.png";
     }
+
+    // if (!commentObj.icon) {
+    // }
     //comment template using template literal
     let comment = `<div class="comment-box px-0 my-2 pb-1 container-fluid d-flex">
   <button class="hidePostsButton align-self-start">[-]</button>
   <div class="media pb-1" id="childOf${commentObj.childOf}">
-  <img class="mr-3 avatar" src=${commentObj.icon} onerror="imgError(this)" alt="dragon!">
+  <img class="mr-3 avatar" src=${icon} onerror="imgError(this)" alt="dragon!">
     <div class="media-body" id=${commentObj._id}>
       <h6 class="mt-0 mb-1">${commentObj.displayName}</h6>
       <p class="mb-1 comment-content">${commentObj.content}</p>
@@ -843,7 +858,7 @@
     });
     $("#iconsBox")
       .append(`<form enctype="multipart/form-data" class='btn icon-button d-flex'><label for="avatar">Choose your own</label>
-    <input class="mb-1" type="file" id="icon-file-pick" name="avatar" accept="image/png, image/jpeg"></form>`);
+    <input class="mb-1 btn btn-file" type="file" id="icon-file-pick" name="avatar" accept="image/png, image/jpeg"></form>`);
     const fileInput = document.getElementById("icon-file-pick");
     fileInput.addEventListener(
       "change",
@@ -857,7 +872,6 @@
   }
 
   async function selectFile(file, type) {
-    console.log(file);
     return compressImage(file)
       .then(newFile => getSignedRequest(newFile))
       .then(res => {
@@ -1076,7 +1090,8 @@
       if (owner === true) {
         addJournalManagement();
       }
-      getComments();
+      getComments()
+      .then(res => constructComments(allComments));
     } else {
       $(topDiv).append("<p>No Journals Yet</p>");
     }
@@ -1121,16 +1136,17 @@
 
   function initTests() {
     Promise.all([
+      getUserIconObj(),
       // userSignIn(),
-      getComments(),
-      getAllCharacters()
+      getAllCharacters(),
+      getComments()
     ])
       .then(res => {
         // assignCharacters();
         // buildCharacterManagementPage();
         buildAllCharactersPage(allCharacters);
         // initCommentClicks();
-
+        constructComments(allComments)
       })
       .catch(err => console.log(err));
   }
