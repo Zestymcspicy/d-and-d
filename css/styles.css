@@ -62,7 +62,12 @@ body {
 
 .character-image {
   max-height: 200px;
-  max-width: 200px; }
+  max-width: 200px;
+  z-index: 2; }
+
+.char-card {
+  z-index: 2;
+  background-color: #cdc4b1 !important; }
 
 .characterSelectButton :hover {
   cursor: pointer;

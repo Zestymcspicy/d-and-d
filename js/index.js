@@ -688,14 +688,14 @@
     }
     const charInfo = `<div class="container">
   <div class="row">
-  <div class="col">
+  <div class="col-2 pl-0">
   ${switchImageButton}
   <img class="character-image img-thumbnail mr-2" src="${currentCharacter.icon}">
   </div>
-  <div class="col">
-  <h1>${currentCharacter.name}</h1>
-  <h6>Race: ${currentCharacter.race}</h6>
-  <h6>Class: ${currentCharacter.class}</h6>
+  <div class="col-5 ml-auto border-light card char-card">
+  <h5 class="card-title">${currentCharacter.name}</h5>
+  <h6 class="card-subtitle mb-2">Race: ${currentCharacter.race}</h6>
+  <h6 class="card-subtitle mb-2">Class: ${currentCharacter.class}</h6>
   </div>
   </div>
   <div class="row">

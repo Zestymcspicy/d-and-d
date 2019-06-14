@@ -95,6 +95,12 @@ body {
 .character-image{
   max-height: 200px;
   max-width: 200px;
+  z-index: 2;
+}
+
+.char-card{
+  z-index: 2;
+  background-color: $primary !important;
 }
 
 .characterSelectButton :hover{
