@@ -690,7 +690,7 @@
   <div class="row">
   <div class="col">
   ${switchImageButton}
-  <img class="character-image mr-2" src="${currentCharacter.icon}">
+  <img class="character-image img-thumbnail mr-2" src="${currentCharacter.icon}">
   </div>
   <div class="col">
   <h1>${currentCharacter.name}</h1>
