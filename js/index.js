@@ -893,7 +893,7 @@
   async function compressImage(file) {
     $("#editImageContainer").empty();
     return new Promise(function(res, rej) {
-      let width = 512;
+      let width = 768;
       const fileName = file.name;
       const fileType = file.type;
       const reader = new FileReader();
@@ -909,7 +909,7 @@
         img.src = event.target.result;
         img.onload = () => {
           if (img.height > img.width) {
-            width = (img.width / img.height) * 512;
+            width = (img.width / img.height) * 768;
           }
           const scaleFactor = width / img.width;
           const imgWidth = width;
