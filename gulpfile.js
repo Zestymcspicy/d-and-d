@@ -9,14 +9,25 @@ sass.compiler = require('node-sass');
 gulp.task('default', ['browser-sync'], function() {
   gulp.watch("./sass/*.scss", ['sass']);
   gulp.watch("css/*.css", browserSync.reload);
-  gulp.watch("index.html", browserSync.reload);
+  gulp.watch("*.html", browserSync.reload);
   gulp.watch("js/*.js", browserSync.reload);
+  gulp.watch("gulpfile.js", browserSync.reload);
 })
 
 gulp.task('browser-sync', function() {
   browserSync.init({
-    server: "./"
-  });
+    server: "./",
+    // https: true
+  }, function(err, bs) {
+        bs.addMiddleware("*", function(req, res) {
+            console.log(req.Url.pathname)
+            res.writeHead(302, {
+                location: `not-found-page.html`,
+            });
+            res.body(req).send()
+            // res.end("Redirecting!");
+        })
+      })
 })
 
 gulp.task('sass', function () {
