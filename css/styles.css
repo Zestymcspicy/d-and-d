@@ -9,6 +9,13 @@ canvas {
 .visible {
   display: block; }
 
+.carousel-caption {
+  color: #3c404a; }
+
+.carousel-item {
+  max-width: 680px;
+  float: none !important; }
+
 .hidePostsButton {
   font-size: 14px;
   background-color: transparent;
@@ -66,6 +73,7 @@ body {
   z-index: 2; }
 
 .char-card {
+  height: fit-content;
   z-index: 2;
   background-color: #cdc4b1 !important; }
 

@@ -11,6 +11,7 @@
   const email = document.getElementById("inputEmail");
   const passwordMatch = $("#inputPasswordMatch")[0];
   const signInButton = $("#sign-in-button");
+  let carousel = '';
   let userIconObj = {};
   let allComments;
   let quill;
@@ -55,7 +56,6 @@
     return fetch(`${url}/users/user_icon_object/`)
     .then(res => res.json())
     .then(data => {
-      console.log(data)
       userIconObj = data.body
     })
     .catch(err => console.log(err))
@@ -273,7 +273,6 @@
   function getSignedRequest(file) {
     return fetch(`${url}/sign-s3?file-name=${file.name}&file-type=${file.type}`)
       .then(res => {
-        console.log(res);
         return res.json();
       })
       .then(data => uploadImage(file, data.signedRequest, data.url))
@@ -518,7 +517,6 @@
      return fetch(`${url}/comments/get`)
       .then(res => res.json())
       .then(data => {
-        console.log(data)
         allComments = data;
         return data;
         // constructComments(allComments);
@@ -664,9 +662,60 @@
     switchMainContent(target);
   }
 
+  function buildCarousel(owner){
+    let editCarouselButton = "";
+    if (
+      userCharacters.filter(x => x._id === currentCharacter._id).length !== 0
+    ) {
+      editCarouselButton = `<button data-char_id=${currentCharacter._id}
+       class='btn btn-primary shadow mb-4 mx-auto mt-1' id='editCarouselImages'>
+       Edit Carousel Images</button>`
+     }
+    carousel = `
+  <div id="carouselContainer">
+  ${editCarouselButton}
+  <div id="characterCarousel" class="carousel slide" data-ride="carousel">
+  <ol class="carousel-indicators">
+  <li data-target="#characterCarousel" data-slide-to="0" class="active"></li>
+  <li data-target="#characterCarousel" data-slide-to="1"></li>
+  <li data-target="#characterCarousel" data-slide-to="2"></li>
+  </ol>
+  <div class="carousel-inner">
+  <div class="carousel-item mx-auto active">
+  <img src="images/hammer.png" class="d-block mx-auto w-100" alt="hammer!">
+  <div class="card">
+  <div class="card-body d-none d-md-block">
+  <h5 class="card-text">First slide label</h5>
+  <p class="card-text">Hubba Hubba</p>
+  </div>
+  </div>
+  </div>
+  <div class="carousel-item mx-auto">
+  <img src="images/shield.png" class="d-block mx-auto w-100" alt="hammer!">
+  <div class="card">
+  <div class="card-body mb-3 d-none d-md-block">
+  <h5 class="card-text">First slide label</h5>
+  <p class="card-text">Hubba Hubba</p>
+  </div>
+  </div>
+  </div>
+  </div>
+  <a class="carousel-control-prev" href="characterCarousel" role="button" data-slide="prev">
+  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+  <span class="sr-only">Previous</span>
+  </a>
+  <a class="carousel-control-next" href="characterCarousel" role="button" data-slide="next">
+  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+  <span class="sr-only">Next</span>
+  </a>
+  </div>
+  </div>`
+  }
+
+
   function buildCharacterPage(currentCharacter) {
     $("#characterPageJumbo").empty();
-    let editCarouselButton = "";
+    buildCarousel()
     let journalUpdateButton = "";
     let editButton = "";
     let switchImageButton = "";
@@ -677,9 +726,7 @@
     if (
       userCharacters.filter(x => x._id === currentCharacter._id).length !== 0
     ) {
-      editCarouselButton = `<button data-char_id=${currentCharacter._id}
-       class='btn btn-primary shadow mb-4 mx-auto mt-1' id='editCarouselImages'>
-       Edit Carousel Images</button>`
+
       editButton = `<button data-char_id=${
         currentCharacter._id
       } id='editCharacterSummaryButton'class='btn btn-primary shadow mb-4 ml-3 mt-1'>Edit Summary</button>`;
@@ -691,30 +738,13 @@
       editButton = "";
     }
     const charInfo = `<div class="container">
-    <div id="carouselContainer">
-    ${editCarouselButton}
-    <div id="characterCarousel" class="carousel slide" data-ride="carousel">
-    <ol class="carousel-indicators">
-    <li data-target="#characterCarousel" data-slide-to="0" class="active"></li>
-    <li data-target="#characterCarousel" data-slide-to="1"></li>
-    <li data-target="#characterCarousel" data-slide-to="2"></li>
-    </ol>
-    <div class="carousel-inner">
-    <div class="carousel-item active">
-    <img src="images/hammer.png" class="d-block w-100" alt="hammer!">
-    <div class="carousel-caption d-none d-md-block">
-    <h5>First slide label</h5>
-    <p>Hubba Hubba</p>
-    </div>
-    </div>
-    </div>
-    </div>
-  <div class="row">
+    ${carousel}
+  <div class="row mt-2">
   <div class="col-2 pl-0">
   ${switchImageButton}
   <img class="character-image img-thumbnail mr-2" src="${currentCharacter.icon}">
   </div>
-  <div class="col-5 ml-auto border-light card char-card">
+  <div class="col-5 ml-auto border-light pt-1 card char-card">
   <h5 class="card-title">${currentCharacter.name}</h5>
   <h6 class="card-subtitle mb-2">Race: ${currentCharacter.race}</h6>
   <h6 class="card-subtitle mb-2">Class: ${currentCharacter.class}</h6>
@@ -833,7 +863,6 @@
   }
 
   function addNewJournalEntry(journalId) {
-    console.log(journalId);
     let contents = quill.getContents();
     let entry = {
       _id: journalId,
@@ -855,7 +884,6 @@
       $("#editCharacterSummary").off("click")
       $("#editCharacterSummaryButton").click(e => {
         e.stopImmediatePropagation()
-        console.log("clicked")
         document.querySelector("#inputBox").remove()
         $("#editCharacterSummary").off("click")
         addEditListener()
@@ -1129,7 +1157,6 @@
 
   function deleteJournal(target) {
     const journalId = target.dataset.target;
-    console.log(journalId);
     if (confirm("Are you sure you want to delete this journal?")) {
       return fetch(`${url}/characters/delete-journal`, {
         method: "PUT",
@@ -1167,7 +1194,6 @@
       getComments()
     ])
       .then(res => {
-        console.log(res)
         // assignCharacters();
         // buildCharacterManagementPage();
         buildAllCharactersPage(allCharacters);

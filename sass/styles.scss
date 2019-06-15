@@ -18,6 +18,15 @@ canvas {
   display: block;
 }
 
+.carousel-caption{
+  color: $myGrey;
+}
+
+.carousel-item{
+  max-width: 680px;
+  float: none!important;
+}
+
 .hidePostsButton {
   font-size: 14px;
   background-color: transparent;
@@ -88,22 +97,23 @@ body {
   display: none;
 }
 
-#allCharactersPage{
+#allCharactersPage {
   color: $myGrey;
 }
 
-.character-image{
+.character-image {
   max-height: 200px;
   max-width: 200px;
   z-index: 2;
 }
 
-.char-card{
+.char-card {
+  height: fit-content;
   z-index: 2;
   background-color: $primary !important;
 }
 
-.characterSelectButton :hover{
+.characterSelectButton :hover {
   cursor: pointer;
   background-color: $myGrey;
   color: $primary;
