@@ -17,13 +17,13 @@ gulp.task('default', ['browser-sync'], function() {
 gulp.task('browser-sync', function() {
   browserSync.init({
     server: "./",
-  // }, function(err, bs) {
-  //       bs.addMiddleware("*", function(req, res) {
-  //           res.writeHead(302, {
-  //               location: `index.html`,
-  //             });
-  //           res.end("Redirecting!");
-  //       })
+  }, function(err, bs) {
+        bs.addMiddleware("*", function(req, res) {
+            res.writeHead(302, {
+                location: `index.html`,
+              });
+            res.end("Redirecting!");
+        })
       })
 })
 

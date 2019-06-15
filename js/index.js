@@ -173,7 +173,6 @@
   function userSignIn() {
     return fetch(`${url}/users/login/`, {
       method: "POST",
-      // body: `displayName=LarryTheCat&password=ImaStupidCat`,
       body: `displayName=${displayName.value}&password=${password.value}`,
       headers: {
         "Content-Type": "application/x-www-form-urlencoded"
@@ -547,8 +546,6 @@
           commentObj.icon = "images/baseDragon.png";
     }
 
-    // if (!commentObj.icon) {
-    // }
     //comment template using template literal
     let comment = `<div class="comment-box px-0 my-2 pb-1 container-fluid d-flex">
   <button class="hidePostsButton align-self-start">[-]</button>
@@ -662,8 +659,39 @@
     switchMainContent(target);
   }
 
-  function buildCarousel(owner){
+  //need to add active class to one of the carousel items
+  function buildCarouselItems() {
+    let returnString = ''
+    if(!currentCharacter.carousel){
+      returnString = `<div class="carousel-item mx-auto active">
+      <img src="images/baseDragon.png" class="d-block mx-auto w-100" alt="hammer!">
+      <div class="card">
+      <div class="card-body d-none d-md-block">
+      <h5 class="card-text">No Items Added Yet</h5>
+      <p class="card-text"></p>
+      </div>
+      </div>
+      </div>`
+    } else {
+    currentCharacter.carousel.forEach(obj => {
+      const carouselString = `<div class="carousel-item mx-auto">
+      <img src=${obj.img} class="d-block mx-auto w-100" alt="hammer!">
+      <div class="card">
+      <div class="card-body mb-3 d-none d-md-block">
+      <h5 class="card-text">${obj.headline}</h5>
+      <p class="card-text">${obj.body}</p>
+      </div>
+      </div>
+      </div>`
+      returnString += carouselString;
+    })
+  }
+    return returnString;
+  }
+
+  function buildCarousel(){
     let editCarouselButton = "";
+    let carouselItems = buildCarouselItems();
     if (
       userCharacters.filter(x => x._id === currentCharacter._id).length !== 0
     ) {
@@ -675,36 +703,14 @@
   <div id="carouselContainer">
   ${editCarouselButton}
   <div id="characterCarousel" class="carousel slide" data-ride="carousel">
-  <ol class="carousel-indicators">
-  <li data-target="#characterCarousel" data-slide-to="0" class="active"></li>
-  <li data-target="#characterCarousel" data-slide-to="1"></li>
-  <li data-target="#characterCarousel" data-slide-to="2"></li>
-  </ol>
   <div class="carousel-inner">
-  <div class="carousel-item mx-auto active">
-  <img src="images/hammer.png" class="d-block mx-auto w-100" alt="hammer!">
-  <div class="card">
-  <div class="card-body d-none d-md-block">
-  <h5 class="card-text">First slide label</h5>
-  <p class="card-text">Hubba Hubba</p>
+  ${carouselItems}
   </div>
-  </div>
-  </div>
-  <div class="carousel-item mx-auto">
-  <img src="images/shield.png" class="d-block mx-auto w-100" alt="hammer!">
-  <div class="card">
-  <div class="card-body mb-3 d-none d-md-block">
-  <h5 class="card-text">First slide label</h5>
-  <p class="card-text">Hubba Hubba</p>
-  </div>
-  </div>
-  </div>
-  </div>
-  <a class="carousel-control-prev" href="characterCarousel" role="button" data-slide="prev">
+  <a class="carousel-control-prev" href="#characterCarousel" role="button" data-slide="prev">
   <span class="carousel-control-prev-icon" aria-hidden="true"></span>
   <span class="sr-only">Previous</span>
   </a>
-  <a class="carousel-control-next" href="characterCarousel" role="button" data-slide="next">
+  <a class="carousel-control-next" href="#characterCarousel" role="button" data-slide="next">
   <span class="carousel-control-next-icon" aria-hidden="true"></span>
   <span class="sr-only">Next</span>
   </a>
@@ -764,7 +770,14 @@
       addJournalListener();
       addEditListener();
       addSelectImageListener();
+      addEditCarouselListener();
     }
+  }
+
+  function addEditCarouselListener() {
+    $("#editCarouselButton").click(e => {
+      console.log(e)
+    })
   }
 
   function addJournalListener() {
@@ -799,7 +812,6 @@
       }
     });
     var toolbar = quill.getModule("toolbar");
-    // $("#openNewJournalEntry").off('click');
     toolbar.addHandler("image", function(e) {
       $("#hidden-file-input").trigger("click");
       const fileInput = document.getElementById("hidden-file-input");
@@ -1189,15 +1201,11 @@
   function initTests() {
     Promise.all([
       getUserIconObj(),
-      // userSignIn(),
       getAllCharacters(),
       getComments()
     ])
       .then(res => {
-        // assignCharacters();
-        // buildCharacterManagementPage();
         buildAllCharactersPage(allCharacters);
-        // initCommentClicks();
         constructComments(allComments)
       })
       .catch(err => console.log(err));
@@ -1206,9 +1214,8 @@
 
   initTests()
 
-  $('img').on('error', e => {
-    // console.log(e)
-    $(this).attr('src', 'images/baseDragon.png')
-  })
+  // $('img').on('error', e => {
+    // $(this).attr('src', 'images/baseDragon.png')
+  // })
 
 // })();
