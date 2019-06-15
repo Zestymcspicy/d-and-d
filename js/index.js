@@ -666,6 +666,7 @@
 
   function buildCharacterPage(currentCharacter) {
     $("#characterPageJumbo").empty();
+    let editCarouselButton = "";
     let journalUpdateButton = "";
     let editButton = "";
     let switchImageButton = "";
@@ -676,6 +677,9 @@
     if (
       userCharacters.filter(x => x._id === currentCharacter._id).length !== 0
     ) {
+      editCarouselButton = `<button data-char_id=${currentCharacter._id}
+       class='btn btn-primary shadow mb-4 mx-auto mt-1' id='editCarouselImages'>
+       Edit Carousel Images</button>`
       editButton = `<button data-char_id=${
         currentCharacter._id
       } id='editCharacterSummaryButton'class='btn btn-primary shadow mb-4 ml-3 mt-1'>Edit Summary</button>`;
@@ -687,6 +691,24 @@
       editButton = "";
     }
     const charInfo = `<div class="container">
+    <div id="carouselContainer">
+    ${editCarouselButton}
+    <div id="characterCarousel" class="carousel slide" data-ride="carousel">
+    <ol class="carousel-indicators">
+    <li data-target="#characterCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#characterCarousel" data-slide-to="1"></li>
+    <li data-target="#characterCarousel" data-slide-to="2"></li>
+    </ol>
+    <div class="carousel-inner">
+    <div class="carousel-item active">
+    <img src="images/hammer.png" class="d-block w-100" alt="hammer!">
+    <div class="carousel-caption d-none d-md-block">
+    <h5>First slide label</h5>
+    <p>Hubba Hubba</p>
+    </div>
+    </div>
+    </div>
+    </div>
   <div class="row">
   <div class="col-2 pl-0">
   ${switchImageButton}

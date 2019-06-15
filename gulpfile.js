@@ -20,7 +20,7 @@ gulp.task('browser-sync', function() {
     // https: true
   }, function(err, bs) {
         bs.addMiddleware("*", function(req, res) {
-            console.log(req.Url.pathname)
+            // console.log(req)
             res.writeHead(302, {
                 location: `not-found-page.html`,
             });
