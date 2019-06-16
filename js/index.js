@@ -1,4 +1,4 @@
-// (function() {
+(function() {
   // const url = "http://localhost:5000";
   const url = "https://pacific-headland-65956.herokuapp.com";
   const signInAlert = $("#signInAlert");
@@ -91,10 +91,10 @@
 
   const imgError = image => {
     image.onerror ="";
-    image.src = "images/baseDragon.png";
+    image.src = "images/dragonImageNotFound.png";
     return true;
   }
-
+  window.imgError = imgError
   newUserButton.addEventListener("click", () => toggleSignInForm());
 
   $("#character-search-input").on("input", function(e) {
@@ -550,7 +550,7 @@
     let comment = `<div class="comment-box px-0 my-2 pb-1 container-fluid d-flex">
   <button class="hidePostsButton align-self-start">[-]</button>
   <div class="media pb-1" id="childOf${commentObj.childOf}">
-  <img class="mr-3 avatar" src=${icon} onerror="imgError(this)" alt="dragon!">
+  <img class="mr-3 avatar" src=${icon} alt="dragon!">
     <div class="media-body" id=${commentObj._id}>
       <h6 class="mt-0 mb-1">${commentObj.displayName}</h6>
       <p class="mb-1 comment-content">${commentObj.content}</p>
@@ -684,10 +684,17 @@
       </div>
       </div>`
       returnString += carouselString;
+
     })
   }
+    console.log(returnString)
     return returnString;
   }
+
+  $("#carousel-modal").on("hide", () => {
+    $("#carouselSubmitButton").toggleClass('d-none');
+    $("#defaultCarouselFooterButtons").toggleClass('d-none');
+  })
 
   function buildCarousel(){
     let editCarouselButton = "";
@@ -767,6 +774,7 @@
   <div id="journals-top"></div>
   </div>`;
     $("#characterPageJumbo").append(charInfo);
+    $(".carousel-item").first().addClass('active');
     addJournals(false);
     if (editButton !== "") {
       addJournalListener();
@@ -800,11 +808,12 @@
       e.stopImmediatePropagation();
       const file = e.target.files[0];
       const correctedImage = await compressImage(file)
-      const fileAddress  = await getSignedRequest(correctedImage)
-      console.log(correctedImage)
-      carouselSlide.img = fileAddress
-      $("#carouselEditorBox").text("")
-      return carouselSlideEditor(carouselSlide);
+      getSignedRequest(correctedImage).then((res) => {
+        console.log(res)
+        carouselSlide.img = res
+        $("#carouselEditorBox").text("")
+        carouselSlideEditor(carouselSlide);
+      })
       })
     }
 
@@ -812,17 +821,23 @@
   function carouselSlideEditor(carouselSlide){
     $("#carousel-modal").modal('show');
     $("#defaultCarouselFooterButtons").toggleClass('d-none');
+    $("#carouselEditorBox").append(`<img class="img-fluid" src=${carouselSlide.img} />`)
+    const carouselTextInput = `<input id="headline" type="text"></input>
+    <textarea id="captionBody"></textarea>`
+    $("#carouselEditorBox").append(carouselTextInput)
     $("#carouselSubmitButton").toggleClass('d-none');
-    $("#carouselEditorBox").append(`<img src=${carouselSlide.img}/>`)
-    let headline = buildElement("headline", "input")
-    let captionBody = buildElement("captionBody", "textarea")
-    headline.type="text"
-    $("#carouselEditorBox").append(headline)
-    $("#carouselEditorBox").append(captionBody)
     $("#carouselSubmitButton").click(function() {
-      carouselSlide.captionBody = captionBody.value;
-      carouselSlide.headline = headline.value;
+      carouselSlide.captionBody = $("#captionBody").val();
+      carouselSlide.headline = $("#headline").val();
+      carouselSlide = JSON.stringify(carouselSlide)
       console.log(carouselSlide);
+      if(currentCharacter.carousel){
+        carouselSlides = currentCharacter.carousel.push(carouselSlide)
+      }else{
+        carouselSlides.push(carouselSlide)
+      }
+      return updateCharacter(carouselSlides, "carousel")
+      .then(res => console.log(res))
     })
 
   }
@@ -1262,7 +1277,66 @@
   initTests()
 
   // $('img').on('error', e => {
-    // $(this).attr('src', 'images/baseDragon.png')
+  //   $(this).attr('src', 'images/baseDragon.png')
   // })
 
-// })();
+
+
+
+})();
+
+(function(win) {
+  'use strict';
+
+  var listeners = [],
+  doc = win.document,
+  MutationObserver = win.MutationObserver || win.WebKitMutationObserver,
+  observer;
+
+  function ready(selector, fn) {
+    // Store the selector and callback to be monitored
+    listeners.push({
+      selector: selector,
+      fn: fn
+    });
+    if (!observer) {
+      // Watch for changes in the document
+      observer = new MutationObserver(check);
+      observer.observe(doc.documentElement, {
+        childList: true,
+        subtree: true
+      });
+    }
+    // Check if the element is currently in the DOM
+    check();
+  }
+
+  function check() {
+    // Check the DOM for elements matching a stored selector
+    for (var i = 0, len = listeners.length, listener, elements; i < len; i++) {
+      listener = listeners[i];
+      // Query for elements matching the specified selector
+      elements = doc.querySelectorAll(listener.selector);
+      for (var j = 0, jLen = elements.length, element; j < jLen; j++) {
+        element = elements[j];
+        // Make sure the callback isn't invoked with the
+        // same element more than once
+        if (!element.ready) {
+          element.ready = true;
+          // Invoke the callback with the element
+          listener.fn.call(element, element);
+        }
+      }
+    }
+  }
+
+  // Expose `ready`
+  win.ready = ready;
+
+})(this);
+
+ready('img', function(element) {
+  console.log(element)
+  element.setAttribute('onerror', "imgError(this)")
+
+  })
