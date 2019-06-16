@@ -679,7 +679,7 @@
       <div class="card">
       <div class="card-body mb-3 d-none d-md-block">
       <h5 class="card-text">${obj.headline}</h5>
-      <p class="card-text">${obj.body}</p>
+      <p class="card-text">${obj.captionBody}</p>
       </div>
       </div>
       </div>`
@@ -695,8 +695,10 @@
     if (
       userCharacters.filter(x => x._id === currentCharacter._id).length !== 0
     ) {
-      editCarouselButton = `<button data-char_id=${currentCharacter._id}
-       class='btn btn-primary shadow mb-4 mx-auto mt-1' id='editCarouselImages'>
+      //data-toggle="modal" data-target="#carousel-modal"
+      editCarouselButton = `<button
+      data-char_id=${currentCharacter._id}
+       class='btn btn-primary shadow mb-4 mx-auto mt-1' id='editCarouselButton'>
        Edit Carousel Images</button>`
      }
     carousel = `
@@ -776,8 +778,53 @@
 
   function addEditCarouselListener() {
     $("#editCarouselButton").click(e => {
-      console.log(e)
+      $("#carousel-modal").modal('show')
+      console.log(e.target)
+      setEditCarouselModalContent(e.target)
     })
+  }
+
+  function setEditCarouselModalContent(target) {
+    if(!currentCharacter.carousel) {
+      $("#carouselEditorBox").text("No Slides Yet, Add Some!")
+    }
+    $("#addCarouselSlide").click(()=> newCarouselSlide())
+  }
+
+  function newCarouselSlide() {
+    let carouselSlide = {}
+    $("#hiddenFileInput").trigger("click");
+    $("#carousel-modal").modal('hide')
+    const fileInput = document.getElementById("hiddenFileInput");
+    fileInput.addEventListener("change", async function(e) {
+      e.stopImmediatePropagation();
+      const file = e.target.files[0];
+      const correctedImage = await compressImage(file)
+      const fileAddress  = await getSignedRequest(correctedImage)
+      console.log(correctedImage)
+      carouselSlide.img = fileAddress
+      $("#carouselEditorBox").text("")
+      return carouselSlideEditor(carouselSlide);
+      })
+    }
+
+
+  function carouselSlideEditor(carouselSlide){
+    $("#carousel-modal").modal('show');
+    $("#defaultCarouselFooterButtons").toggleClass('d-none');
+    $("#carouselSubmitButton").toggleClass('d-none');
+    $("#carouselEditorBox").append(`<img src=${carouselSlide.img}/>`)
+    let headline = buildElement("headline", "input")
+    let captionBody = buildElement("captionBody", "textarea")
+    headline.type="text"
+    $("#carouselEditorBox").append(headline)
+    $("#carouselEditorBox").append(captionBody)
+    $("#carouselSubmitButton").click(function() {
+      carouselSlide.captionBody = captionBody.value;
+      carouselSlide.headline = headline.value;
+      console.log(carouselSlide);
+    })
+
   }
 
   function addJournalListener() {
@@ -813,8 +860,8 @@
     });
     var toolbar = quill.getModule("toolbar");
     toolbar.addHandler("image", function(e) {
-      $("#hidden-file-input").trigger("click");
-      const fileInput = document.getElementById("hidden-file-input");
+      $("#hiddenFileInput").trigger("click");
+      const fileInput = document.getElementById("hiddenFileInput");
       fileInput.addEventListener("change", function(e) {
         e.stopImmediatePropagation();
         const file = e.target.files[0];
@@ -1057,7 +1104,7 @@
       const topX = (wh-imgWidth)/2
       copy.canvas.width = imgWidth;
       copy.canvas.height = imgHeight;
-      const trimmed = ctx.getImageData(topX, topY, imgHeight, imgWidth)
+      const trimmed = ctx.getImageData(topX, topY, imgWidth, imgHeight)
       copy.putImageData(trimmed, 0, 0)
       return copy.canvas;
     }
