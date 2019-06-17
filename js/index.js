@@ -675,9 +675,9 @@
     } else {
     currentCharacter.carousel.forEach(obj => {
       const carouselString = `<div class="carousel-item mx-auto">
-      <img src=${obj.img} class="d-block mx-auto w-100" alt="hammer!">
       <div class="card">
-      <div class="card-body mb-3 d-none d-md-block">
+      <div class="card-body mb-3 d-block">
+      <img src="${obj.img}" class="d-block w-100" alt="hammer!">
       <h5 class="card-text">${obj.headline}</h5>
       <p class="card-text">${obj.captionBody}</p>
       </div>
@@ -711,7 +711,7 @@
     carousel = `
   <div id="carouselContainer">
   ${editCarouselButton}
-  <div id="characterCarousel" class="carousel slide" data-ride="carousel">
+  <div id="characterCarousel" class="carousel slide carousel-fade" data-ride="carousel">
   <div class="carousel-inner">
   ${carouselItems}
   </div>
@@ -753,7 +753,11 @@
       editButton = "";
     }
     const charInfo = `<div class="container">
+    <div class="row">
+    <div class="col"
     ${carousel}
+    </div>
+    </div>
   <div class="row mt-2">
   <div class="col-2 pl-0">
   ${switchImageButton}
@@ -821,26 +825,32 @@
   function carouselSlideEditor(carouselSlide){
     $("#carousel-modal").modal('show');
     $("#defaultCarouselFooterButtons").toggleClass('d-none');
-    $("#carouselEditorBox").append(`<img class="img-fluid" src=${carouselSlide.img} />`)
-    const carouselTextInput = `<input id="headline" type="text"></input>
-    <textarea id="captionBody"></textarea>`
+    $("#carouselEditorBox").append(`<img class="img-fluid" src="${carouselSlide.img}" />`)
+    const carouselTextInput = `<div class="row"><label for="headline">Headline</label><input id="headline" type="text"></input></div>
+    <div class="row"><label for="captionBody">Caption</label><textarea id="captionBody"></textarea></div>`
     $("#carouselEditorBox").append(carouselTextInput)
     $("#carouselSubmitButton").toggleClass('d-none');
+    if(!carouselSlide._id){
+      carouselSlide._id = Date.now()
+    } else {
+      $("#captionBody").val() = carouselSlide.captionBody;
+      $("#headline").val() = carouselSlide.headline;
+    }
     $("#carouselSubmitButton").click(function() {
+      $("#carouselSubmitButton").toggleClass('d-none');
+      $("#defaultCarouselFooterButtons").toggleClass('d-none');
       carouselSlide.captionBody = $("#captionBody").val();
       carouselSlide.headline = $("#headline").val();
-      carouselSlide = JSON.stringify(carouselSlide)
       console.log(carouselSlide);
-      if(currentCharacter.carousel){
-        carouselSlides = currentCharacter.carousel.push(carouselSlide)
-      }else{
-        carouselSlides.push(carouselSlide)
-      }
-      return updateCharacter(carouselSlides, "carousel")
+      carouselSlide = JSON.stringify(carouselSlide)
+      $("#carousel-modal").modal('hide')
+      return updateCharacter(carouselSlide, "carousel")
       .then(res => console.log(res))
     })
 
   }
+
+
 
   function addJournalListener() {
     $("#editJournal").click(e => {
@@ -1336,7 +1346,5 @@
 })(this);
 
 ready('img', function(element) {
-  console.log(element)
   element.setAttribute('onerror', "imgError(this)")
-
-  })
+})
