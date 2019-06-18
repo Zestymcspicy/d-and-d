@@ -658,11 +658,11 @@
     switchMainContent(target);
   }
 
-  //need to add active class to one of the carousel items
+
   function buildCarouselItems() {
     let returnString = ''
     if(!currentCharacter.carousel){
-      // returnString = `<div class="carousel-item mx-auto active">
+
       const returnString = `
       <div class="card">
       <div class="card-body d-none d-md-block">
@@ -671,12 +671,12 @@
       <p class="card-text"></p>
       </div>
       </div>`
-      // </div>`
+
     } else {
     currentCharacter.carousel.forEach(obj => {
-      // const carouselString = `<div class="carousel-item mx-auto">
+
       const carouselString =`
-      <div class="item carousel-card">
+      <div class="item carousel-card mx-auto">
       <div class="card">
       <div class="card-body mb-3 d-block">
       <img src="${obj.img}" class="d-block w-100" alt="hammer!">
@@ -704,30 +704,14 @@
     if (
       userCharacters.filter(x => x._id === currentCharacter._id).length !== 0
     ) {
-      //data-toggle="modal" data-target="#carousel-modal"
+
       editCarouselButton = `<button
       data-char_id=${currentCharacter._id}
        class='btn btn-primary shadow mb-4 mx-auto mt-1' id='editCarouselButton'>
        Edit Carousel Images</button>`
      }
      return carousel = `<div class='owl-carousel owl-theme'>${carouselItems}</div>`
-  //   carousel = `
-  // <div id="carouselContainer">
-  // ${editCarouselButton}
-  // <div id="characterCarousel" class="carousel slide carousel-fade" data-ride="carousel">
-  // <div class="carousel-inner">
-  // ${carouselItems}
-  // </div>
-  // <a class="carousel-control-prev" href="#characterCarousel" role="button" data-slide="prev">
-  // <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-  // <span class="sr-only">Previous</span>
-  // </a>
-  // <a class="carousel-control-next" href="#characterCarousel" role="button" data-slide="next">
-  // <span class="carousel-control-next-icon" aria-hidden="true"></span>
-  // <span class="sr-only">Next</span>
-  // </a>
-  // </div>
-  // </div>`
+  
   }
 
 
