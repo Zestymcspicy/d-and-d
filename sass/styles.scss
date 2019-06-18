@@ -83,6 +83,9 @@ body {
   width: 48px;
 }
 
+.carousel-card{
+  max-width: 38rem;
+}
 
 .comment-box {
   &:nth-of-type(n+2) {
@@ -99,6 +102,29 @@ body {
 #allCharactersPage {
   color: $myGrey;
 }
+
+.owl-prev {
+  width: 15px;
+  height: 100px;
+  position: absolute;
+  top: 40%;
+  margin-left: -20px;
+  display: block !important;
+  border:0px solid black;
+}
+
+
+.owl-next {
+  width: 15px;
+  height: 100px;
+  position: absolute;
+  top: 40%;
+  right: -25px;
+  display: block !important;
+  border:0px solid black;
+}
+
+.owl-prev i, .owl-next i {transform : scale(1,6); color: $myGrey;}
 
 .character-image {
   max-height: 200px;

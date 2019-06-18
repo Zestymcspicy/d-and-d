@@ -11,7 +11,6 @@
   const email = document.getElementById("inputEmail");
   const passwordMatch = $("#inputPasswordMatch")[0];
   const signInButton = $("#sign-in-button");
-  let carousel = '';
   let userIconObj = {};
   let allComments;
   let quill;
@@ -663,18 +662,21 @@
   function buildCarouselItems() {
     let returnString = ''
     if(!currentCharacter.carousel){
-      returnString = `<div class="carousel-item mx-auto active">
-      <img src="images/baseDragon.png" class="d-block mx-auto w-100" alt="hammer!">
+      // returnString = `<div class="carousel-item mx-auto active">
+      const returnString = `
       <div class="card">
       <div class="card-body d-none d-md-block">
+      <img src="images/baseDragon.png" class="d-block mx-auto w-100" alt="hammer!">
       <h5 class="card-text">No Items Added Yet</h5>
       <p class="card-text"></p>
       </div>
-      </div>
       </div>`
+      // </div>`
     } else {
     currentCharacter.carousel.forEach(obj => {
-      const carouselString = `<div class="carousel-item mx-auto">
+      // const carouselString = `<div class="carousel-item mx-auto">
+      const carouselString =`
+      <div class="item carousel-card">
       <div class="card">
       <div class="card-body mb-3 d-block">
       <img src="${obj.img}" class="d-block w-100" alt="hammer!">
@@ -684,7 +686,6 @@
       </div>
       </div>`
       returnString += carouselString;
-
     })
   }
     console.log(returnString)
@@ -697,6 +698,7 @@
   })
 
   function buildCarousel(){
+    let carousel
     let editCarouselButton = "";
     let carouselItems = buildCarouselItems();
     if (
@@ -708,29 +710,30 @@
        class='btn btn-primary shadow mb-4 mx-auto mt-1' id='editCarouselButton'>
        Edit Carousel Images</button>`
      }
-    carousel = `
-  <div id="carouselContainer">
-  ${editCarouselButton}
-  <div id="characterCarousel" class="carousel slide carousel-fade" data-ride="carousel">
-  <div class="carousel-inner">
-  ${carouselItems}
-  </div>
-  <a class="carousel-control-prev" href="#characterCarousel" role="button" data-slide="prev">
-  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-  <span class="sr-only">Previous</span>
-  </a>
-  <a class="carousel-control-next" href="#characterCarousel" role="button" data-slide="next">
-  <span class="carousel-control-next-icon" aria-hidden="true"></span>
-  <span class="sr-only">Next</span>
-  </a>
-  </div>
-  </div>`
+     return carousel = `<div class='owl-carousel owl-theme'>${carouselItems}</div>`
+  //   carousel = `
+  // <div id="carouselContainer">
+  // ${editCarouselButton}
+  // <div id="characterCarousel" class="carousel slide carousel-fade" data-ride="carousel">
+  // <div class="carousel-inner">
+  // ${carouselItems}
+  // </div>
+  // <a class="carousel-control-prev" href="#characterCarousel" role="button" data-slide="prev">
+  // <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+  // <span class="sr-only">Previous</span>
+  // </a>
+  // <a class="carousel-control-next" href="#characterCarousel" role="button" data-slide="next">
+  // <span class="carousel-control-next-icon" aria-hidden="true"></span>
+  // <span class="sr-only">Next</span>
+  // </a>
+  // </div>
+  // </div>`
   }
 
 
   function buildCharacterPage(currentCharacter) {
     $("#characterPageJumbo").empty();
-    buildCarousel()
+    const carousel = buildCarousel()
     let journalUpdateButton = "";
     let editButton = "";
     let switchImageButton = "";
@@ -754,7 +757,7 @@
     }
     const charInfo = `<div class="container">
     <div class="row">
-    <div class="col"
+    <div class="col">
     ${carousel}
     </div>
     </div>
@@ -1286,12 +1289,6 @@
 
   initTests()
 
-  // $('img').on('error', e => {
-  //   $(this).attr('src', 'images/baseDragon.png')
-  // })
-
-
-
 
 })();
 
@@ -1347,4 +1344,15 @@
 
 ready('img', function(element) {
   element.setAttribute('onerror', "imgError(this)")
+})
+
+ready('.owl-carousel', function(element) {
+  $('.owl-carousel').owlCarousel({
+    center: true,
+    loop:true,
+    margin:10,
+    nav:true,
+    items: 1,
+    navText : ['<i class="fa fa-angle-left carousel-arrow" aria-hidden="true"></i>','<i class="fa fa-angle-right carousel-arrow" aria-hidden="true"></i>']
+})
 })
