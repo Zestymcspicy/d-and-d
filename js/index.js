@@ -674,11 +674,10 @@
 
     } else {
     currentCharacter.carousel.forEach(obj => {
-
       const carouselString =`
       <div class="item carousel-card mx-auto">
       <div class="card">
-      <div class="card-body mb-3 d-block">
+      <div class="card-body d-block">
       <img src="${obj.img}" class="d-block w-100" alt="hammer!">
       <h5 class="card-text">${obj.headline}</h5>
       <p class="card-text">${obj.captionBody}</p>
@@ -688,11 +687,12 @@
       returnString += carouselString;
     })
   }
-    console.log(returnString)
     return returnString;
   }
 
-  $("#carousel-modal").on("hide", () => {
+  $("#carousel-modal").on("hide.bd.modal", function(e) {
+    console.log(e);
+    $("#carouselEditorBox").children().remove()
     $("#carouselSubmitButton").toggleClass('d-none');
     $("#defaultCarouselFooterButtons").toggleClass('d-none');
   })
@@ -705,13 +705,13 @@
       userCharacters.filter(x => x._id === currentCharacter._id).length !== 0
     ) {
 
-      editCarouselButton = `<button
+      editCarouselButton = `<div class="row"><button
       data-char_id=${currentCharacter._id}
        class='btn btn-primary shadow mb-4 mx-auto mt-1' id='editCarouselButton'>
-       Edit Carousel Images</button>`
+       Edit Carousel Images</button></div>`
      }
-     return carousel = `<div class='owl-carousel owl-theme'>${carouselItems}</div>`
-  
+     return carousel = `${editCarouselButton}<div class='owl-carousel owl-theme'>${carouselItems}</div>`
+
   }
 
 
@@ -765,7 +765,6 @@
   <div id="journals-top"></div>
   </div>`;
     $("#characterPageJumbo").append(charInfo);
-    $(".carousel-item").first().addClass('active');
     addJournals(false);
     if (editButton !== "") {
       addJournalListener();
@@ -778,15 +777,24 @@
   function addEditCarouselListener() {
     $("#editCarouselButton").click(e => {
       $("#carousel-modal").modal('show')
-      console.log(e.target)
       setEditCarouselModalContent(e.target)
     })
   }
 
   function setEditCarouselModalContent(target) {
+    $("#carouselEditorBox").empty()
     if(!currentCharacter.carousel) {
       $("#carouselEditorBox").text("No Slides Yet, Add Some!")
+    } else {
+      // $("#carouselEditorBox").addClass("d-flex")
+      let items = buildCarouselItems()
+      $("#carouselEditorBox").append(items);
+      console.log($("#carouselEditorBox").children().each(function(i) {
+        $(this).removeClass('mx-auto');
+        $(this).addClass('m-2')
+      }))
     }
+
     $("#addCarouselSlide").click(()=> newCarouselSlide())
   }
 
@@ -803,18 +811,31 @@
         console.log(res)
         carouselSlide.img = res
         $("#carouselEditorBox").text("")
-        carouselSlideEditor(carouselSlide);
+        openCarouselSlideEditor(carouselSlide);
       })
       })
     }
 
 
-  function carouselSlideEditor(carouselSlide){
+  function openCarouselSlideEditor(carouselSlide){
+    $("#carouselEditorBox").empty()
+    $("#carouselEditorBox").removeClass("d-flex")
     $("#carousel-modal").modal('show');
     $("#defaultCarouselFooterButtons").toggleClass('d-none');
-    $("#carouselEditorBox").append(`<img class="img-fluid" src="${carouselSlide.img}" />`)
-    const carouselTextInput = `<div class="row"><label for="headline">Headline</label><input id="headline" type="text"></input></div>
-    <div class="row"><label for="captionBody">Caption</label><textarea id="captionBody"></textarea></div>`
+    $("#carouselEditorBox").append(`<div class="row">
+      <img class="img-fluid mx-auto mt-2" src="${carouselSlide.img}" />`)
+    const carouselTextInput = `<div class="container">
+    <div class="row my-2">
+    <label class="mr-2 my-auto" for="headline">Headline
+    </label>
+    <input id="headline" type="text">
+     </input>
+     </div>
+     <div class="row my-1">
+     <label class="mr-3 my-auto" for="captionBody">Caption</label>
+     <textarea id="captionBody"></textarea>
+     </div>
+     </div>`
     $("#carouselEditorBox").append(carouselTextInput)
     $("#carouselSubmitButton").toggleClass('d-none');
     if(!carouselSlide._id){
@@ -831,6 +852,8 @@
       console.log(carouselSlide);
       carouselSlide = JSON.stringify(carouselSlide)
       $("#carousel-modal").modal('hide')
+      $("#carouselEditorBox").addClass("d-flex")
+      // $("#carouselEditorBox").empty()
       return updateCharacter(carouselSlide, "carousel")
       .then(res => console.log(res))
     })

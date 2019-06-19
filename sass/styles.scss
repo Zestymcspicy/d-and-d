@@ -157,6 +157,11 @@ body {
   width: 100%;
 }
 
+#carouselEditorBox{
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+}
+
 .comment-button, .aye-button, .nay-button {
   padding: 0 2px;
   font-size: 12px;
@@ -167,8 +172,15 @@ body {
   color: $myGrey;
 }
 
+#carouselEditorBox{
+  .carousel-card{
+    max-width: 10rem;
+  }
+}
+
 @media (max-width: 576px){
   body{
     background-color: $myGrey;
   }
+
 }

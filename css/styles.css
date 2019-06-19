@@ -117,6 +117,10 @@ body {
 .avatar-char-name {
   width: 100%; }
 
+#carouselEditorBox {
+  flex-wrap: wrap;
+  justify-content: space-evenly; }
+
 .comment-button, .aye-button, .nay-button {
   padding: 0 2px;
   font-size: 12px; }
@@ -124,6 +128,9 @@ body {
 #characterManagementPageJumbo, #characterPageJumbo {
   background-color: #cdc4b1;
   color: #3c404a; }
+
+#carouselEditorBox .carousel-card {
+  max-width: 10rem; }
 
 @media (max-width: 576px) {
   body {
