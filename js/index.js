@@ -675,7 +675,7 @@
     } else {
     currentCharacter.carousel.forEach(obj => {
       const carouselString =`
-      <div class="item carousel-card mx-auto">
+      <div data-target=${obj._id} class="item carousel-card mx-auto">
       <div class="card">
       <div class="card-body d-block">
       <img src="${obj.img}" class="d-block w-100" alt="hammer!">
@@ -777,16 +777,15 @@
   function addEditCarouselListener() {
     $("#editCarouselButton").click(e => {
       $("#carousel-modal").modal('show')
-      setEditCarouselModalContent(e.target)
+      setEditCarouselModalContent()
     })
   }
 
-  function setEditCarouselModalContent(target) {
+  function setEditCarouselModalContent() {
     $("#carouselEditorBox").empty()
     if(!currentCharacter.carousel) {
       $("#carouselEditorBox").text("No Slides Yet, Add Some!")
     } else {
-      // $("#carouselEditorBox").addClass("d-flex")
       let items = buildCarouselItems()
       $("#carouselEditorBox").append(items);
       console.log($("#carouselEditorBox").children().each(function(i) {
@@ -794,8 +793,20 @@
         $(this).addClass('m-2')
       }))
     }
+    $("#deleteCarouselSlide").click(async () => {
+      $(".carousel-card").click(e => {
+        let target = e.currentTarget;
+        // console.log(e)
+      // const slideId = await selectSlide()
+        deleteJournalOrCarousel(target, "carousel");
+        setEditCarouselModalContent();
+    })
+  })
+    $("#editCarouselSlide").click(() => {})
+    $("#addCarouselSlide").click(() => newCarouselSlide())
+  }
 
-    $("#addCarouselSlide").click(()=> newCarouselSlide())
+  async function selectSlide(){
   }
 
   function newCarouselSlide() {
@@ -1245,28 +1256,34 @@
   }
 
   function addJournalManagement() {
-    $(".deleteThisJournal").click(e => deleteJournal(e.target));
+    $(".deleteThisJournal").click(e => deleteJournalOrCarousel(e.target, "journals"));
     $(".editThisJournal").click(e => addJournalEditor(e));
   }
 
-  function deleteJournal(target) {
+  function deleteJournalOrCarousel(target, type) {
     const journalId = target.dataset.target;
-    if (confirm("Are you sure you want to delete this journal?")) {
-      return fetch(`${url}/characters/delete-journal`, {
+    const typeText = (type==="carousel"?"carousel slide":"journal")
+    if (confirm(`Are you sure you want to delete this ${typeText}?`)) {
+      return fetch(`${url}/characters/delete-journal-or-carousel`, {
         method: "PUT",
-        body: `character_id=${currentCharacter._id}&journal_id=${journalId}`,
+        body: `character_id=${currentCharacter._id}&journal_or_carousel_id=${journalId}&type=${type}`,
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         }
       })
         .then(res => res.json())
         .then(data => {
-          if (data.message === "journal deleted") {
-            const newJournals = currentCharacter.journals.filter(
-              journal => journal._id.toString() !== data.journal_id.toString()
+          if (data.message === `${type} deleted`) {
+            const newContent = currentCharacter[type].filter(
+              content => content._id.toString() !== data[type].toString()
             );
-            currentCharacter.journals = newJournals;
-            addJournals(true);
+            currentCharacter[type] = newContent;
+            if(type==="journals"){
+              addJournals(true);
+            }
+            if(type==="carousel"){
+              buildCarousel()
+            }
           }
         })
         .catch(err => console.log(err));
