@@ -1,6 +1,6 @@
-(function() {
-  // const url = "http://localhost:5000";
-  const url = "https://pacific-headland-65956.herokuapp.com";
+// (function() {
+  const url = "http://localhost:5000";
+  // const url = "https://pacific-headland-65956.herokuapp.com";
   const signInAlert = $("#signInAlert");
   const charForm = document.forms["charForm"];
   const userForm = document.forms["userForm"];
@@ -270,9 +270,7 @@
 
   function getSignedRequest(file) {
     return fetch(`${url}/sign-s3?file-name=${file.name}&file-type=${file.type}`)
-      .then(res => {
-        return res.json();
-      })
+      .then(res => res.json())
       .then(data => uploadImage(file, data.signedRequest, data.url))
       .catch(err => console.log(err));
   }
@@ -791,7 +789,7 @@
     } else {
       let items = buildCarouselItems()
       $("#carouselEditorBox").append(items);
-      console.log($("#carouselEditorBox").children().each(function(i) {
+      ($("#carouselEditorBox").children().each(function(i) {
         $(this).removeClass('mx-auto');
         $(this).addClass('m-2')
       }))
@@ -809,16 +807,18 @@
         deleteJournalOrCarousel(target, "carousel")
         .then(x => {
           $(".carousel-card").off("click");
-        setEditCarouselModalContent();
+          setEditCarouselModalContent();
       })
     })
   })
     $("#editCarouselSlide").click(() => {})
-    $("#addCarouselSlide").click(() => newCarouselSlide())
+    $("#addCarouselSlide").click(() => {
+      $("#addCarouselSlide").off("click")
+      newCarouselSlide()
+    })
   }
 
-  async function selectSlide(){
-  }
+
 
   function newCarouselSlide() {
     $("#hiddenFileInput").trigger("click");
@@ -863,8 +863,8 @@
     if(!carouselSlide._id){
       carouselSlide._id = Date.now()
     } else {
-      $("#captionBody").val() = carouselSlide.captionBody;
-      $("#headline").val() = carouselSlide.headline;
+      $("#captionBody").text(carouselSlide.captionBody);
+      $("#headline").text(carouselSlide.headline);
     }
     $("#carouselSubmitButton").click(function() {
       $("#carouselSubmitButton").toggleClass('d-none');
@@ -872,11 +872,13 @@
       carouselSlide.captionBody = $("#captionBody").val();
       carouselSlide.headline = $("#headline").val();
       console.log(carouselSlide);
-      carouselSlide = JSON.stringify(carouselSlide)
+      const carouselSlideString = JSON.stringify(carouselSlide)
       $("#carousel-modal").modal('hide')
       $("#carouselEditorBox").addClass("d-flex")
+      $("#captionBody").text("")
+      $("#headline").text("")
       // $("#carouselEditorBox").empty()
-      return updateCharacter(carouselSlide, "carousel")
+      return updateCharacter(carouselSlideString, "carousel")
       .then(res => console.log(res))
     })
   }
@@ -1126,6 +1128,8 @@
               canvasToBlob = trimImage(ctx, canvas, rotation, wh, imgWidth, imgHeight)
             }
             $("#editImageContainer").empty();
+            $("#rotateLeft").off('click');
+            $("#rotateRight").off('click')
             $("#imageReadyButton").off("click");
             $("#image-edit-modal").modal("hide");
             canvasToBlob.toBlob(
@@ -1198,7 +1202,7 @@
       .then(data => {
         allCharacters.push(data.body);
         currentCharacter = data.body;
-        buildCharacterPage(currentCharacter)
+        buildCharacterPage  (currentCharacter)
         return currentCharacter;
       })
       .catch(err => console.log(err));
@@ -1286,12 +1290,12 @@
         .then(data => {
           if (data.message === `${type} deleted`) {
             console.log(data)
-
-            const newContent = currentCharacter[type].filter(
-              content => content._id !== data[type]
-            );
-            currentCharacter[type] = newContent;
-            console.log(currentCharacter, newContent)
+            currentCharacter = data.character
+            // const newContent = currentCharacter[type].filter(
+            //   content => content._id !== data[type]
+            // );
+            // currentCharacter[type] = newContent;
+            console.log(currentCharacter)
             if(type==="journals"){
               addJournals(true);
             }
@@ -1326,9 +1330,9 @@
 
 
   initTests()
+// })();
 
 
-})();
 
 (function(win) {
   'use strict';
