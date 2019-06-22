@@ -674,6 +674,9 @@
 
     } else {
     currentCharacter.carousel.forEach(obj => {
+      if(typeof(obj) === "string"){
+        obj=JSON.parse(obj)
+      }
       const carouselString =`
       <div data-target=${obj._id} class="item carousel-card mx-auto">
       <div class="card">
@@ -793,13 +796,21 @@
         $(this).addClass('m-2')
       }))
     }
-    $("#deleteCarouselSlide").click(async () => {
+    $("#deleteCarouselSlide").click((e) => {
+      e.stopImmediatePropagation();
+      $("#carouselEditModalHeader").text("Select a slide to delete.")
+      $(".carousel-card").children(".card").toggleClass('highlight-delete');
       $(".carousel-card").click(e => {
         let target = e.currentTarget;
+        $(".carousel-card").children(".card").toggleClass('highlight-delete');
+        $("#carouselEditModalHeader").text("Edit Your Carousel")
         // console.log(e)
       // const slideId = await selectSlide()
-        deleteJournalOrCarousel(target, "carousel");
+        deleteJournalOrCarousel(target, "carousel")
+        .then(x => {
+          $(".carousel-card").off("click");
         setEditCarouselModalContent();
+      })
     })
   })
     $("#editCarouselSlide").click(() => {})
@@ -810,8 +821,8 @@
   }
 
   function newCarouselSlide() {
-    let carouselSlide = {}
     $("#hiddenFileInput").trigger("click");
+    let carouselSlide = {}
     $("#carousel-modal").modal('hide')
     const fileInput = document.getElementById("hiddenFileInput");
     fileInput.addEventListener("change", async function(e) {
@@ -868,7 +879,6 @@
       return updateCharacter(carouselSlide, "carousel")
       .then(res => console.log(res))
     })
-
   }
 
 
@@ -1188,7 +1198,8 @@
       .then(data => {
         allCharacters.push(data.body);
         currentCharacter = data.body;
-        buildCharacterPage(currentCharacter);
+        buildCharacterPage(currentCharacter)
+        return currentCharacter;
       })
       .catch(err => console.log(err));
   }
@@ -1274,10 +1285,13 @@
         .then(res => res.json())
         .then(data => {
           if (data.message === `${type} deleted`) {
+            console.log(data)
+
             const newContent = currentCharacter[type].filter(
-              content => content._id.toString() !== data[type].toString()
+              content => content._id !== data[type]
             );
             currentCharacter[type] = newContent;
+            console.log(currentCharacter, newContent)
             if(type==="journals"){
               addJournals(true);
             }

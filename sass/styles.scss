@@ -80,7 +80,7 @@ body {
 
 .avatar {
   height: 48px;
-  width: 48px;
+  width: auto;
 }
 
 .carousel-card{
@@ -111,6 +111,11 @@ body {
   margin-left: -20px;
   display: block !important;
   border:0px solid black;
+}
+
+.highlight-delete:hover {
+  cursor: pointer;
+  background-color: red;
 }
 
 
