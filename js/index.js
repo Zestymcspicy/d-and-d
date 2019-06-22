@@ -1,6 +1,6 @@
-// (function() {
-  const url = "http://localhost:5000";
-  // const url = "https://pacific-headland-65956.herokuapp.com";
+(function() {
+  // const url = "http://localhost:5000";
+  const url = "https://pacific-headland-65956.herokuapp.com";
   const signInAlert = $("#signInAlert");
   const charForm = document.forms["charForm"];
   const userForm = document.forms["userForm"];
@@ -1291,10 +1291,7 @@
           if (data.message === `${type} deleted`) {
             console.log(data)
             currentCharacter = data.character
-            // const newContent = currentCharacter[type].filter(
-            //   content => content._id !== data[type]
-            // );
-            // currentCharacter[type] = newContent;
+
             console.log(currentCharacter)
             if(type==="journals"){
               addJournals(true);
@@ -1330,7 +1327,7 @@
 
 
   initTests()
-// })();
+})();
 
 
 
