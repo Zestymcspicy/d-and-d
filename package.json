@@ -2,6 +2,7 @@
   "name": "danddfrontend",
   "version": "1.0.0",
   "description": "front end of ttrpg app",
+  "homepage": "https://halbeckerman.net/dungeon",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

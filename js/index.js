@@ -1,6 +1,6 @@
 (function() {
-  // const url = "http://localhost:5000";
-  const url = "https://pacific-headland-65956.herokuapp.com";
+  const url = "http://localhost:5000";
+  // const url = "https://pacific-headland-65956.herokuapp.com";
   const signInAlert = $("#signInAlert");
   const charForm = document.forms["charForm"];
   const userForm = document.forms["userForm"];
@@ -53,11 +53,11 @@
 
   const getUserIconObj = () => {
     return fetch(`${url}/users/user_icon_object/`)
-    .then(res => res.json())
-    .then(data => {
-      userIconObj = data.body
-    })
-    .catch(err => console.log(err))
+      .then(res => res.json())
+      .then(data => {
+        userIconObj = data.body
+      })
+      .catch(err => console.log(err))
   }
 
   const hideCommentOverflow = () => {
@@ -72,16 +72,16 @@
       const contentEdge = offset.left + width
       const edge = buttonsBoxEdge > contentEdge ? buttonsBoxEdge : contentEdge;
       const target = $(this).closest(".media").prev()
-      if(edge > windowWidth*.95) {
-          target.each(function() {
-            this.innerHTML = '[+]';
-            this.nextElementSibling.classList.add("hidden");
-          })
-      }else if(edge < windowWidth*.95) {
-          target.each(function() {
-            this.innerHTML = '[-]';
-            this.nextElementSibling.classList.remove("hidden");
-          })
+      if (edge > windowWidth * .95) {
+        target.each(function() {
+          this.innerHTML = '[+]';
+          this.nextElementSibling.classList.add("hidden");
+        })
+      } else if (edge < windowWidth * .95) {
+        target.each(function() {
+          this.innerHTML = '[-]';
+          this.nextElementSibling.classList.remove("hidden");
+        })
       }
     });
   }
@@ -89,7 +89,7 @@
   window.onresize = hideCommentOverflow;
 
   const imgError = image => {
-    image.onerror ="";
+    image.onerror = "";
     image.src = "images/dragonImageNotFound.png";
     return true;
   }
@@ -101,9 +101,9 @@
   });
 
   $("#allGoodCheck").click(e => {
-    e.target.checked
-      ? $("#characterSubmitButton").removeAttr("disabled")
-      : $("#characterSubmitButton").attr("disabled", true);
+    e.target.checked ?
+      $("#characterSubmitButton").removeAttr("disabled") :
+      $("#characterSubmitButton").attr("disabled", true);
   });
 
   $("#addCharacterButton").click(e => switchMainContent(e.target));
@@ -163,7 +163,7 @@
       .then(res => res.json())
       .then(data => {
         allCharacters = data.body
-        allCharacters.forEach( x => userIconObj[x.name] = x.icon)
+        allCharacters.forEach(x => userIconObj[x.name] = x.icon)
         return allCharacters
       })
       .catch(err => console.log(err));
@@ -171,12 +171,12 @@
 
   function userSignIn() {
     return fetch(`${url}/users/login/`, {
-      method: "POST",
-      body: `displayName=${displayName.value}&password=${password.value}`,
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      }
-    })
+        method: "POST",
+        body: `displayName=${displayName.value}&password=${password.value}`,
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      })
       .catch(err => console.log(err))
       .then(res => res.json())
       .then(data => {
@@ -200,14 +200,14 @@
 
   function addUser() {
     return fetch(`${url}/users/create/`, {
-      method: "POST",
-      body: `displayName=${displayName.value}&password=${
+        method: "POST",
+        body: `displayName=${displayName.value}&password=${
         password.value
       }&email=${email.value}&passwordMatch=${passwordMatch.value}`,
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      }
-    })
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      })
       .then(res => res.json())
       .then(data => {
         if (data.message === "success") {
@@ -246,14 +246,14 @@
     const charClass = document.getElementById("classInput");
     const race = document.getElementById("raceInput");
     return fetch(`${url}/characters/create/`, {
-      method: "POST",
-      body: `name=${name.value}&level=${level.value}&class=${
+        method: "POST",
+        body: `name=${name.value}&level=${level.value}&class=${
         charClass.value
       }&user=${user._id}&race=${race.value}`,
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      }
-    })
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      })
       .then(res => res.json())
       .then(data => {
         allCharacters.push(data.body);
@@ -277,9 +277,9 @@
 
   function uploadImage(file, signedRequest, iconUrl) {
     return fetch(signedRequest, {
-      method: "PUT",
-      body: file
-    })
+        method: "PUT",
+        body: file
+      })
       .then(res => {
         console.log(res);
         return iconUrl;
@@ -397,12 +397,14 @@
   function sendVotes(comment) {
     const votes = JSON.stringify(comment.votes);
     return fetch(`${url}/comments/${comment._id}`, {
-      method: "PATCH",
-      body: `votes=${votes}`,
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      }
-    });
+        method: "PATCH",
+        body: `votes=${votes}`,
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      })
+      .then(res => res.json())
+      .then(data => console.log(data));
   }
 
   function findComment(id) {
@@ -493,15 +495,15 @@
       icon: postAuthObj.icon
     };
     return fetch(`${url}/comments/add/`, {
-      method: "POST",
-      body: `auth_id=${postAuthObj.auth_id}&displayName=${
+        method: "POST",
+        body: `auth_id=${postAuthObj.auth_id}&displayName=${
         postAuthObj.name
       }&content=${content}&childOf=${parentDiv.id}&icon=${postAuthObj.icon}`,
 
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      }
-    })
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      })
       .then(res => res.json())
       .then(data => {
         buildComment(data.comment);
@@ -510,7 +512,7 @@
   }
 
   function getComments() {
-     return fetch(`${url}/comments/get`)
+    return fetch(`${url}/comments/get`)
       .then(res => res.json())
       .then(data => {
         allComments = data;
@@ -525,8 +527,12 @@
       $(".comment-box").remove();
     }
     comments.forEach(comment => {
-      const votes = JSON.parse(comment.votes);
-      comment.votes = votes;
+      // TO-CLEAN on standardization
+      console.log(typeof(comment.votes))
+      if (typeof(comment.votes) === "string") {
+        const votes = JSON.parse(comment.votes);
+        comment.votes = votes;
+      }
       buildComment(comment);
     });
     initCommentClicks();
@@ -538,9 +544,9 @@
         score: 0
       };
     }
-      icon = userIconObj[commentObj.displayName]
-    if(icon == undefined){
-          commentObj.icon = "images/baseDragon.png";
+    icon = userIconObj[commentObj.displayName]
+    if (icon == undefined) {
+      commentObj.icon = "images/baseDragon.png";
     }
 
     //comment template using template literal
@@ -608,7 +614,7 @@
       } alt="user-icon"/></div>`
     );
     $("#characterList")
-  .children()
+      .children()
       .remove();
     populateIconModal("user");
     $("#addCharacterButton").removeAttr("disabled");
@@ -659,7 +665,7 @@
 
   function buildCarouselItems() {
     let returnString = ''
-    if(!currentCharacter.carousel){
+    if (!currentCharacter.carousel) {
 
       const returnString = `
       <div class="card">
@@ -671,11 +677,11 @@
       </div>`
 
     } else {
-    currentCharacter.carousel.forEach(obj => {
-      if(typeof(obj) === "string"){
-        obj=JSON.parse(obj)
-      }
-      const carouselString =`
+      currentCharacter.carousel.forEach(obj => {
+        if (typeof(obj) === "string") {
+          obj = JSON.parse(obj)
+        }
+        const carouselString = `
       <div data-target=${obj._id} class="item carousel-card mx-auto">
       <div class="card">
       <div class="card-body d-block">
@@ -685,9 +691,9 @@
       </div>
       </div>
       </div>`
-      returnString += carouselString;
-    })
-  }
+        returnString += carouselString;
+      })
+    }
     return returnString;
   }
 
@@ -698,7 +704,7 @@
     $("#defaultCarouselFooterButtons").toggleClass('d-none');
   })
 
-  function buildCarousel(){
+  function buildCarousel() {
     let carousel
     let editCarouselButton = "";
     let carouselItems = buildCarouselItems();
@@ -710,8 +716,8 @@
       data-char_id=${currentCharacter._id}
        class='btn btn-primary shadow mb-4 mx-auto mt-1' id='editCarouselButton'>
        Edit Carousel Images</button></div>`
-     }
-     return carousel = `${editCarouselButton}<div class='owl-carousel owl-theme'>${carouselItems}</div>`
+    }
+    return carousel = `${editCarouselButton}<div class='owl-carousel owl-theme'>${carouselItems}</div>`
 
   }
 
@@ -784,7 +790,7 @@
 
   function setEditCarouselModalContent() {
     $("#carouselEditorBox").empty()
-    if(!currentCharacter.carousel) {
+    if (!currentCharacter.carousel) {
       $("#carouselEditorBox").text("No Slides Yet, Add Some!")
     } else {
       let items = buildCarouselItems()
@@ -803,26 +809,26 @@
         $(".carousel-card").children(".card").toggleClass('highlight-delete');
         $("#carouselEditModalHeader").text("Edit Your Carousel")
         // console.log(e)
-      // const slideId = await selectSlide()
+        // const slideId = await selectSlide()
         deleteJournalOrCarousel(target, "carousel")
-        .then(x => {
-          $(".carousel-card").off("click");
-          setEditCarouselModalContent();
+          .then(x => {
+            $(".carousel-card").off("click");
+            setEditCarouselModalContent();
+          })
       })
     })
-  })
     $("#editCarouselSlide").click(() => {})
     $("#addCarouselSlide").click(() => {
+      let carouselSlide = {}
       $("#addCarouselSlide").off("click")
-      newCarouselSlide()
+      newCarouselSlide(carouselSlide)
     })
   }
 
 
 
-  function newCarouselSlide() {
+  function newCarouselSlide(carouselSlide) {
     $("#hiddenFileInput").trigger("click");
-    let carouselSlide = {}
     $("#carousel-modal").modal('hide')
     const fileInput = document.getElementById("hiddenFileInput");
     fileInput.addEventListener("change", async function(e) {
@@ -835,11 +841,11 @@
         $("#carouselEditorBox").text("")
         openCarouselSlideEditor(carouselSlide);
       })
-      })
-    }
+    })
+  }
 
 
-  function openCarouselSlideEditor(carouselSlide){
+  function openCarouselSlideEditor(carouselSlide) {
     $("#carouselEditorBox").empty()
     $("#carouselEditorBox").removeClass("d-flex")
     $("#carousel-modal").modal('show');
@@ -860,7 +866,7 @@
      </div>`
     $("#carouselEditorBox").append(carouselTextInput)
     $("#carouselSubmitButton").toggleClass('d-none');
-    if(!carouselSlide._id){
+    if (!carouselSlide._id) {
       carouselSlide._id = Date.now()
     } else {
       $("#captionBody").text(carouselSlide.captionBody);
@@ -879,11 +885,9 @@
       $("#headline").text("")
       // $("#carouselEditorBox").empty()
       return updateCharacter(carouselSlideString, "carousel")
-      .then(res => console.log(res))
+        .then(res => console.log(res))
     })
   }
-
-
 
   function addJournalListener() {
     $("#editJournal").click(e => {
@@ -910,7 +914,9 @@
       theme: "snow",
       modules: {
         toolbar: [
-          [{ header: [1, 2, 3] }],
+          [{
+            header: [1, 2, 3]
+          }],
           ["bold", "italic", "underline"],
           ["image"]
         ]
@@ -1093,38 +1099,38 @@
           let rotation = 0;
           $("#rotateRight").click(function(e) {
             e.stopImmediatePropagation()
-            rotation+=45;
-            if(rotation===180){
+            rotation += 45;
+            if (rotation === 180) {
               rotation = 0;
             }
             rotateImage(45)
           });
           $("#rotateLeft").click(function(e) {
             e.stopImmediatePropagation()
-            rotation-=45;
-            if(rotation===-180){
+            rotation -= 45;
+            if (rotation === -180) {
               rotation = 0;
             }
             rotateImage(-45);
           });
 
-            function rotateImage(x) {
-              ctx.clearRect(0, 0, wh, wh);
-              ctx.fillStyle = 'transparent'
-              ctx.fillRect(0, 0, wh, wh);
-              ctx.translate(canvas.width / 2, canvas.height / 2);
-              ctx.rotate((x * Math.PI) / 180);
-              ctx.translate(-canvas.width / 2, -canvas.height / 2);
-              ctx.drawImage(img, originX, originY, imgWidth, imgHeight);
-              if(rotation === 0 || rotation === 90){
-                trimImage(ctx, canvas, rotation, wh, imgWidth, imgHeight)
-              }
-
+          function rotateImage(x) {
+            ctx.clearRect(0, 0, wh, wh);
+            ctx.fillStyle = 'transparent'
+            ctx.fillRect(0, 0, wh, wh);
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+            ctx.rotate((x * Math.PI) / 180);
+            ctx.translate(-canvas.width / 2, -canvas.height / 2);
+            ctx.drawImage(img, originX, originY, imgWidth, imgHeight);
+            if (rotation === 0 || rotation === 90) {
+              trimImage(ctx, canvas, rotation, wh, imgWidth, imgHeight)
             }
+
+          }
 
           $("#imageReadyButton").click(() => {
             let canvasToBlob = ctx.canvas;
-            if(rotation === 0 || rotation === 90){
+            if (rotation === 0 || rotation === 90) {
               canvasToBlob = trimImage(ctx, canvas, rotation, wh, imgWidth, imgHeight)
             }
             $("#editImageContainer").empty();
@@ -1149,19 +1155,19 @@
     });
   }
 
-  function trimImage(ctx, canvas, rotation, wh, imgWidth, imgHeight){
+  function trimImage(ctx, canvas, rotation, wh, imgWidth, imgHeight) {
     const copy = document.createElement('canvas').getContext('2d');
-    if(rotation === 90) {
-      const topY = (wh-imgWidth)/2
-      const topX = (wh-imgHeight)/2
+    if (rotation === 90) {
+      const topY = (wh - imgWidth) / 2
+      const topX = (wh - imgHeight) / 2
       copy.canvas.width = imgHeight;
       copy.canvas.height = imgWidth;
       const trimmed = ctx.getImageData(topX, topY, imgHeight, imgWidth)
       copy.putImageData(trimmed, 0, 0)
       return copy.canvas;
     } else {
-      const topY = (wh-imgHeight)/2
-      const topX = (wh-imgWidth)/2
+      const topY = (wh - imgHeight) / 2
+      const topX = (wh - imgWidth) / 2
       copy.canvas.width = imgWidth;
       copy.canvas.height = imgHeight;
       const trimmed = ctx.getImageData(topX, topY, imgWidth, imgHeight)
@@ -1176,12 +1182,12 @@
 
   function updateUserAvatar(iconUrl) {
     return fetch(`${url}/users/${user._id}/image`, {
-      method: "POST",
-      body: `icon=${iconUrl}`,
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      }
-    })
+        method: "POST",
+        body: `icon=${iconUrl}`,
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      })
       .then(res => res.json())
       .then(data => {
         user = data.user;
@@ -1192,17 +1198,17 @@
 
   function updateCharacter(content, type) {
     return fetch(`${url}/characters/${currentCharacter._id}/update`, {
-      method: "PUT",
-      body: `type=${type}&content=${content}`,
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      }
-    })
+        method: "PUT",
+        body: `type=${type}&content=${content}`,
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      })
       .then(res => res.json())
       .then(data => {
         allCharacters.push(data.body);
         currentCharacter = data.body;
-        buildCharacterPage  (currentCharacter)
+        buildCharacterPage(currentCharacter)
         return currentCharacter;
       })
       .catch(err => console.log(err));
@@ -1264,7 +1270,7 @@
         addJournalManagement();
       }
       getComments()
-      .then(res => constructComments(allComments));
+        .then(res => constructComments(allComments));
     } else {
       $(topDiv).append("<p>No Journals Yet</p>");
     }
@@ -1277,15 +1283,15 @@
 
   function deleteJournalOrCarousel(target, type) {
     const journalId = target.dataset.target;
-    const typeText = (type==="carousel"?"carousel slide":"journal")
+    const typeText = (type === "carousel" ? "carousel slide" : "journal")
     if (confirm(`Are you sure you want to delete this ${typeText}?`)) {
       return fetch(`${url}/characters/delete-journal-or-carousel`, {
-        method: "PUT",
-        body: `character_id=${currentCharacter._id}&journal_or_carousel_id=${journalId}&type=${type}`,
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        }
-      })
+          method: "PUT",
+          body: `character_id=${currentCharacter._id}&journal_or_carousel_id=${journalId}&type=${type}`,
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          }
+        })
         .then(res => res.json())
         .then(data => {
           if (data.message === `${type} deleted`) {
@@ -1293,10 +1299,10 @@
             currentCharacter = data.character
 
             console.log(currentCharacter)
-            if(type==="journals"){
+            if (type === "journals") {
               addJournals(true);
             }
-            if(type==="carousel"){
+            if (type === "carousel") {
               buildCarousel()
             }
           }
@@ -1314,10 +1320,10 @@
 
   function initTests() {
     Promise.all([
-      getUserIconObj(),
-      getAllCharacters(),
-      getComments()
-    ])
+        getUserIconObj(),
+        getAllCharacters(),
+        getComments()
+      ])
       .then(res => {
         buildAllCharactersPage(allCharacters);
         constructComments(allComments)
@@ -1335,9 +1341,9 @@
   'use strict';
 
   var listeners = [],
-  doc = win.document,
-  MutationObserver = win.MutationObserver || win.WebKitMutationObserver,
-  observer;
+    doc = win.document,
+    MutationObserver = win.MutationObserver || win.WebKitMutationObserver,
+    observer;
 
   function ready(selector, fn) {
     // Store the selector and callback to be monitored
@@ -1388,10 +1394,10 @@ ready('img', function(element) {
 ready('.owl-carousel', function(element) {
   $('.owl-carousel').owlCarousel({
     center: true,
-    loop:true,
-    margin:10,
-    nav:true,
+    loop: true,
+    margin: 10,
+    nav: true,
     items: 1,
-    navText : ['<i class="fa fa-angle-left carousel-arrow" aria-hidden="true"></i>','<i class="fa fa-angle-right carousel-arrow" aria-hidden="true"></i>']
-})
+    navText: ['<i class="fa fa-angle-left carousel-arrow" aria-hidden="true"></i>', '<i class="fa fa-angle-right carousel-arrow" aria-hidden="true"></i>']
+  })
 })
