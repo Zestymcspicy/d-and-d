@@ -1,6 +1,6 @@
 (function() {
-  const url = "http://localhost:5000";
-  // const url = "https://pacific-headland-65956.herokuapp.com";
+  // const url = "http://localhost:5000";
+  const url = "https://pacific-headland-65956.herokuapp.com";
   const signInAlert = $("#signInAlert");
   const charForm = document.forms["charForm"];
   const userForm = document.forms["userForm"];
